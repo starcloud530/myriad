@@ -182,6 +182,10 @@ export const messages = {
     try: {
       placeholder: "Type a message",
     },
+    code: {
+      copy: "Copy",
+      copied: "Copied",
+    },
   },
   zh: {
     brand: "万象",
@@ -363,6 +367,10 @@ export const messages = {
     },
     try: {
       placeholder: "输入要发送的内容",
+    },
+    code: {
+      copy: "复制",
+      copied: "已复制",
     },
   },
 } as const;

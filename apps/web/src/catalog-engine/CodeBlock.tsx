@@ -2,6 +2,7 @@ import { CheckOutlined, CopyOutlined } from "@ant-design/icons";
 import { Button, Segmented, Typography, message } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { useState } from "react";
+import { useLocale } from "../i18n/Locale.tsx";
 import { codeBg, codeFg } from "../tokens/theme.ts";
 
 const preStyle: CSSProperties = {
@@ -25,6 +26,7 @@ export function CodeBlock({
   code?: string;
   tabs?: Array<{ label: string; value: string; code: string }>;
 }): ReactNode {
+  const { copy } = useLocale();
   const [tab, setTab] = useState(tabs?.[0]?.value ?? "");
   const [copied, setCopied] = useState(false);
   const active = tabs?.find((item) => item.value === tab) ?? tabs?.[0];
@@ -52,14 +54,14 @@ export function CodeBlock({
           onClick={() => {
             void navigator.clipboard.writeText(text).then(() => {
               setCopied(true);
-              void message.success("已复制");
+              void message.success(copy.code.copied);
               window.setTimeout(() => {
                 setCopied(false);
               }, 1500);
             });
           }}
         >
-          复制
+          {copy.code.copy}
         </Button>
       </div>
       <pre style={preStyle}>
