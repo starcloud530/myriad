@@ -1,7 +1,7 @@
-import { CheckOutlined, CopyOutlined } from "@ant-design/icons";
-import { Button, Segmented, Typography, message } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { useState } from "react";
+import { CodeTabs } from "../components/ui/CodeTabs.tsx";
+import { CopyChip } from "../components/ui/CopyChip.tsx";
 import { useLocale } from "../i18n/Locale.tsx";
 import { codeBg, codeFg } from "../tokens/theme.ts";
 
@@ -10,6 +10,7 @@ const preStyle: CSSProperties = {
   padding: 14,
   background: codeBg,
   color: codeFg,
+  border: "1px solid #1f1f1f",
   borderRadius: 8,
   overflow: "auto",
   fontSize: 13,
@@ -28,7 +29,6 @@ export function CodeBlock({
 }): ReactNode {
   const { copy } = useLocale();
   const [tab, setTab] = useState(tabs?.[0]?.value ?? "");
-  const [copied, setCopied] = useState(false);
   const active = tabs?.find((item) => item.value === tab) ?? tabs?.[0];
   const text = active?.code ?? code ?? "";
 
@@ -36,37 +36,17 @@ export function CodeBlock({
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
         {tabs && tabs.length > 1 ? (
-          <Segmented
-            size="small"
-            value={active?.value}
-            options={tabs.map((item) => ({ label: item.label, value: item.value }))}
-            onChange={(value) => {
-              setTab(String(value));
-              setCopied(false);
-            }}
+          <CodeTabs
+            tabs={tabs.map((item) => ({ label: item.label, value: item.value }))}
+            value={active?.value ?? tab}
+            onChange={setTab}
           />
         ) : (
           <span />
         )}
-        <Button
-          size="small"
-          icon={copied ? <CheckOutlined /> : <CopyOutlined />}
-          onClick={() => {
-            void navigator.clipboard.writeText(text).then(() => {
-              setCopied(true);
-              void message.success(copy.code.copied);
-              window.setTimeout(() => {
-                setCopied(false);
-              }, 1500);
-            });
-          }}
-        >
-          {copy.code.copy}
-        </Button>
+        <CopyChip text={text} copyLabel={copy.code.copy} copiedLabel={copy.code.copied} />
       </div>
-      <pre style={preStyle}>
-        <Typography.Text style={{ color: codeFg, fontFamily: "inherit", whiteSpace: "inherit" }}>{text}</Typography.Text>
-      </pre>
+      <pre style={preStyle}>{text}</pre>
     </div>
   );
 }

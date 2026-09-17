@@ -1,4 +1,5 @@
 import { parse } from "yaml";
+import { catalogSearchText } from "./labels.ts";
 import type { ModelKind, ModelModality, ModelMode, ModelPricing, ModelRecord, PricingUnit } from "./spec.ts";
 
 const rawModules = import.meta.glob("../../../../catalog/models/*/*.yaml", {
@@ -140,9 +141,7 @@ export function filterModels(models: ModelRecord[], query: string, modality: "al
     if (!needle) {
       return true;
     }
-    const hay = [model.id, model.name, model.vendor, model.vendor_model, model.capability, model.description, model.kind]
-      .join(" ")
-      .toLowerCase();
+    const hay = catalogSearchText(model);
     return hay.includes(needle);
   });
 }

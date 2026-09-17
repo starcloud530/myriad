@@ -1,23 +1,10 @@
-import { Button, Input, Typography } from "antd";
-import type { CSSProperties, ReactNode } from "react";
+import { Input, Typography } from "antd";
+import type { ReactNode } from "react";
 import { useState } from "react";
+import { SolidButton } from "../../components/ui/SolidButton.tsx";
 import { invokeCapability } from "../../lib/api.ts";
-import { borderColor, errorColor, surfaceBg, textSecondary } from "../../tokens/theme.ts";
+import { borderColor } from "../../tokens/theme.ts";
 import type { ModelRecord } from "../../catalog-engine/spec.ts";
-
-const thread: CSSProperties = {
-  display: "grid",
-  gap: 12,
-  maxWidth: 720,
-};
-
-const bubble: CSSProperties = {
-  padding: "10px 12px",
-  borderRadius: 8,
-  border: `1px solid ${borderColor}`,
-  background: surfaceBg,
-  whiteSpace: "pre-wrap",
-};
 
 function latencyOf(started: number): string {
   return `${Math.round(performance.now() - started)} ms`;
@@ -104,37 +91,40 @@ function ChatPlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: stri
   }
 
   return (
-    <div style={thread}>
-      {rows.map((row, index) => (
-        <div key={`${row.role}-${index}`} style={{ ...bubble, marginLeft: row.role === "assistant" ? 0 : 48 }}>
-          <Typography.Text type="secondary">{row.role === "user" ? "You" : "Assistant"}</Typography.Text>
-          {row.latency ? (
-            <Typography.Text type="secondary" style={{ marginLeft: 8 }}>
-              {row.latency}
-            </Typography.Text>
-          ) : null}
-          <div>{row.text}</div>
-        </div>
-      ))}
-      {error ? <pre style={{ margin: 0, color: errorColor, whiteSpace: "pre-wrap" }}>{error}</pre> : null}
-      <Input.TextArea
-        value={draft}
-        autoSize={{ minRows: 2, maxRows: 6 }}
-        placeholder="Type a message"
-        onChange={(event) => {
-          setDraft(event.target.value);
-        }}
-        onPressEnter={(event) => {
-          if (!event.shiftKey) {
-            event.preventDefault();
-            void send();
-          }
-        }}
-      />
-      <div>
-        <Button type="primary" loading={pending} onClick={() => void send()}>
-          Send
-        </Button>
+    <div className="try-stage">
+      <div className="chat-log">
+        {rows.length === 0 ? (
+          <div className="try-empty">Type a message. Enter to send, Shift+Enter for a new line.</div>
+        ) : null}
+        {rows.map((row, index) => (
+          <div key={`${row.role}-${index}`} className={row.role === "user" ? "chat-bubble is-user" : "chat-bubble"}>
+            <div className="chat-meta">
+              {row.role === "user" ? "You" : "Assistant"}
+              {row.latency ? ` · ${row.latency}` : ""}
+            </div>
+            <div>{row.text}</div>
+          </div>
+        ))}
+        {error ? <pre className="try-error">{error}</pre> : null}
+      </div>
+      <div className="chat-composer">
+        <Input.TextArea
+          value={draft}
+          autoSize={{ minRows: 3, maxRows: 8 }}
+          placeholder="Type a message"
+          onChange={(event) => {
+            setDraft(event.target.value);
+          }}
+          onPressEnter={(event) => {
+            if (!event.shiftKey) {
+              event.preventDefault();
+              void send();
+            }
+          }}
+        />
+        <SolidButton disabled={pending} onClick={() => void send()}>
+          {pending ? "…" : "Send"}
+        </SolidButton>
       </div>
     </div>
   );
@@ -164,28 +154,29 @@ function ImagePlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: str
   }
 
   return (
-    <div style={thread}>
-      <Input.TextArea
-        value={prompt}
-        autoSize={{ minRows: 2, maxRows: 6 }}
-        onChange={(event) => {
-          setPrompt(event.target.value);
-        }}
-      />
-      <div>
-        <Button type="primary" loading={pending} onClick={() => void run()}>
-          Generate
-        </Button>
-        {latency ? (
-          <Typography.Text type="secondary" style={{ marginLeft: 12 }}>
-            {latency}
-          </Typography.Text>
-        ) : null}
+    <div className="try-split">
+      <div className="try-col">
+        <Input.TextArea
+          value={prompt}
+          autoSize={{ minRows: 10, maxRows: 18 }}
+          onChange={(event) => {
+            setPrompt(event.target.value);
+          }}
+        />
+        <div className="try-actions">
+          <SolidButton disabled={pending} onClick={() => void run()}>
+            {pending ? "…" : "Generate"}
+          </SolidButton>
+          {latency ? <span className="chat-meta">{latency}</span> : null}
+        </div>
+        {error ? <pre className="try-error">{error}</pre> : null}
       </div>
-      {error ? <pre style={{ margin: 0, color: errorColor, whiteSpace: "pre-wrap" }}>{error}</pre> : null}
-      {uris.map((uri) => (
-        <img key={uri} src={uri} alt="" style={{ maxWidth: 480, borderRadius: 8, border: `1px solid ${borderColor}` }} />
-      ))}
+      <div className="try-preview">
+        {uris.length === 0 ? <div className="try-empty">Generated images land here.</div> : null}
+        {uris.map((uri) => (
+          <img key={uri} src={uri} alt="" style={{ width: "100%", borderRadius: 8, border: `1px solid ${borderColor}` }} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -227,29 +218,25 @@ function SimplePlay({
   }
 
   return (
-    <div style={thread}>
-      <Input.TextArea
-        value={value}
-        autoSize={{ minRows: 2, maxRows: 6 }}
-        placeholder={placeholder}
-        onChange={(event) => {
-          setValue(event.target.value);
-        }}
-      />
-      <div>
-        <Button type="primary" loading={pending} onClick={() => void run()}>
-          Run
-        </Button>
-        {latency ? (
-          <Typography.Text type="secondary" style={{ marginLeft: 12 }}>
-            {latency}
-          </Typography.Text>
-        ) : null}
+    <div className="try-split">
+      <div className="try-col">
+        <Input.TextArea
+          value={value}
+          autoSize={{ minRows: 10, maxRows: 18 }}
+          placeholder={placeholder}
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
+        />
+        <div className="try-actions">
+          <SolidButton disabled={pending} onClick={() => void run()}>
+            {pending ? "…" : "Run"}
+          </SolidButton>
+          {latency ? <span className="chat-meta">{latency}</span> : null}
+        </div>
+        {error ? <pre className="try-error">{error}</pre> : null}
       </div>
-      {error ? <pre style={{ margin: 0, color: errorColor, whiteSpace: "pre-wrap" }}>{error}</pre> : null}
-      {output ? (
-        <pre style={{ ...bubble, margin: 0, overflow: "auto", color: textSecondary }}>{output}</pre>
-      ) : null}
+      <pre className="try-preview try-output">{output || "Response JSON lands here."}</pre>
     </div>
   );
 }

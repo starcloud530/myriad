@@ -1,29 +1,98 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Modal, Space, Table, Tag, Typography, message } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { Form, Input, Modal, message } from "antd";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { PageFrame } from "../../components/biz/PageFrame.tsx";
 import { PageHeader } from "../../components/biz/PageHeader.tsx";
-import { StatRow } from "../../components/biz/StatRow.tsx";
+import { GhostButton } from "../../components/ui/GhostButton.tsx";
+import { SearchField } from "../../components/ui/SearchField.tsx";
+import { SolidButton } from "../../components/ui/SolidButton.tsx";
+import { SpecChip } from "../../components/ui/SpecChip.tsx";
+import { StatusDot } from "../../components/ui/StatusDot.tsx";
+import { MeterStrip } from "../../components/viz/MeterStrip.tsx";
 import { forgetSecret } from "../../features/keys/sessionSecrets.ts";
 import { displayKey, type ProductKey } from "../../features/keys/types.ts";
 import { useProductKeys } from "../../features/keys/useProductKeys.ts";
+import type { Locale } from "../../i18n/locale.ts";
 import { useLocale } from "../../i18n/Locale.tsx";
+import type { Messages } from "../../i18n/messages.ts";
 import { createKey, deleteKey, rotateKey, updateKey } from "../../lib/api.ts";
 import { getDevApiKey } from "../../lib/devKey.ts";
+import "./keys.css";
 
 interface KeyForm {
   tag: string;
   description: string;
 }
 
-function formatTime(iso: string, locale: string): string {
+type KeysCopy = Messages["keys"];
+
+function formatTime(iso: string, locale: Locale): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) {
     return iso;
   }
-  return date.toLocaleString(locale === "zh" ? "zh-CN" : "en-US", { hour12: false });
+  return date.toLocaleString(locale === "zh" ? "zh-CN" : "en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+function KeySlab({
+  row,
+  locale,
+  labels,
+  onEdit,
+  onRotate,
+  onRemove,
+}: {
+  row: ProductKey;
+  locale: Locale;
+  labels: KeysCopy;
+  onEdit: (row: ProductKey) => void;
+  onRotate: (row: ProductKey) => void;
+  onRemove: (row: ProductKey) => void;
+}): ReactNode {
+  const locked = row.system;
+  const live = row.status === "active";
+
+  return (
+    <article className="keys-slab">
+      <div className="keys-head">
+        <div className="keys-eyebrow">{row.tag || "—"}</div>
+        {locked ? (
+          <SpecChip>{labels.system}</SpecChip>
+        ) : (
+          <StatusDot live={live} label={live ? labels.active : labels.disabled} />
+        )}
+      </div>
+      <p className="keys-prefix">{displayKey(row)}</p>
+      <div className="keys-foot">
+        <div className="keys-meta">
+          <span>{row.description || "—"}</span>
+          <span className="keys-meta-sep" aria-hidden>
+            ·
+          </span>
+          <time dateTime={row.created_at}>{formatTime(row.created_at, locale)}</time>
+        </div>
+        <div className="keys-actions">
+          <GhostButton disabled={locked} onClick={() => onEdit(row)}>
+            {labels.edit}
+          </GhostButton>
+          <GhostButton disabled={locked} onClick={() => onRotate(row)}>
+            {labels.rotate}
+          </GhostButton>
+          <GhostButton disabled={locked} onClick={() => onRemove(row)}>
+            {labels.remove}
+          </GhostButton>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export function KeysPage(): ReactNode {
@@ -35,6 +104,8 @@ export function KeysPage(): ReactNode {
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<ProductKey | null>(null);
   const [revealed, setRevealed] = useState<ProductKey | null>(null);
+  const [rotating, setRotating] = useState<ProductKey | null>(null);
+  const [removing, setRemoving] = useState<ProductKey | null>(null);
   const [form] = Form.useForm<KeyForm>();
   const [editForm] = Form.useForm<KeyForm>();
 
@@ -46,89 +117,23 @@ export function KeysPage(): ReactNode {
     return keys.filter((row) => [row.id, row.tag, row.description, row.prefix].join(" ").toLowerCase().includes(needle));
   }, [query, keys]);
 
-  const columns: ColumnsType<ProductKey> = [
-    { title: "ID", dataIndex: "id", width: 140 },
-    {
-      title: "API Key",
-      render: (_, row) => <Typography.Text copyable={row.system ? { text: row.prefix } : false}>{displayKey(row)}</Typography.Text>,
-    },
-    { title: k.tag, dataIndex: "tag" },
-    { title: k.description, dataIndex: "description", ellipsis: true },
-    {
-      title: k.created,
-      dataIndex: "created_at",
-      width: 180,
-      render: (value: string) => formatTime(value, locale),
-    },
-    {
-      title: k.status,
-      dataIndex: "status",
-      width: 88,
-      render: (status: ProductKey["status"], row) =>
-        row.system ? <Tag>{k.system}</Tag> : <Tag color={status === "active" ? "green" : "default"}>{status === "active" ? k.active : k.disabled}</Tag>,
-    },
-    {
-      title: k.actions,
-      width: 220,
-      render: (_, row) => {
-        return (
-          <Space size={0}>
-            <Button
-              type="link"
-              size="small"
-              disabled={row.system}
-              onClick={() => {
-                setEditing(row);
-                editForm.setFieldsValue({ tag: row.tag, description: row.description });
-              }}
-            >
-              {k.edit}
-            </Button>
-            <Button
-              type="link"
-              size="small"
-              disabled={row.system}
-              onClick={() => {
-                Modal.confirm({
-                  title: k.rotateTitle,
-                  content: k.rotateBody,
-                  okText: k.rotate,
-                  onOk: async () => {
-                    const body = await rotateKey(bootstrap, row.id);
-                    remember(body.key);
-                    setRevealed(body.key);
-                  },
-                });
-              }}
-            >
-              {k.rotate}
-            </Button>
-            <Button
-              type="link"
-              size="small"
-              danger
-              disabled={row.system}
-              onClick={() => {
-                Modal.confirm({
-                  title: k.removeTitle,
-                  okText: k.remove,
-                  okButtonProps: { danger: true },
-                  onOk: async () => {
-                    await deleteKey(bootstrap, row.id);
-                    forgetSecret(row.id);
-                    await reload();
-                    void message.success(k.deleted);
-                  },
-                });
-              }}
-            >
-              {k.remove}
-            </Button>
-          </Space>
-        );
-      },
-    },
-  ];
+  const openCreate = (): void => {
+    form.resetFields();
+    setCreating(true);
+  };
+
+  const openEdit = (row: ProductKey): void => {
+    setEditing(row);
+    editForm.setFieldsValue({ tag: row.tag, description: row.description });
+  };
+
+  const confirmRotate = (row: ProductKey): void => {
+    setRotating(row);
+  };
+
+  const confirmRemove = (row: ProductKey): void => {
+    setRemoving(row);
+  };
 
   return (
     <PageFrame>
@@ -137,53 +142,49 @@ export function KeysPage(): ReactNode {
         title={k.title}
         description={k.intro}
         extra={
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              form.resetFields();
-              setCreating(true);
-            }}
-          >
+          <SolidButton onClick={openCreate}>
+            <PlusOutlined />
             {k.create}
-          </Button>
+          </SolidButton>
         }
       />
-      <StatRow
+      <MeterStrip
         items={[
           { label: k.count, value: String(keys.length) },
           { label: k.enabled, value: String(keys.filter((row) => row.status === "active").length) },
           { label: k.gateway, value: error ? k.offline : k.online },
         ]}
       />
-      <Card
-        styles={{ body: { paddingTop: 16 } }}
-        title={k.list}
-        extra={
-          <Input.Search
-            allowClear
-            placeholder={k.search}
-            style={{ width: 240 }}
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-            }}
+      <SearchField
+        className="keys-search"
+        placeholder={k.search}
+        value={query}
+        style={{
+          width: "100%",
+          maxWidth: "none",
+          height: 40,
+          borderRadius: 0,
+          borderWidth: "0 0 1px",
+          background: "transparent",
+        }}
+        onChange={(event) => {
+          setQuery(event.target.value);
+        }}
+      />
+      <div className="keys-roster">
+        {!loading && visible.length === 0 ? <div className="keys-empty">{k.list}</div> : null}
+        {visible.map((row) => (
+          <KeySlab
+            key={row.id}
+            row={row}
+            locale={locale}
+            labels={k}
+            onEdit={openEdit}
+            onRotate={confirmRotate}
+            onRemove={confirmRemove}
           />
-        }
-      >
-        {error ? (
-          <Typography.Paragraph type="danger">{error}</Typography.Paragraph>
-        ) : (
-          <Table<ProductKey>
-            rowKey="id"
-            columns={columns}
-            dataSource={visible}
-            loading={loading}
-            pagination={false}
-            scroll={{ x: 1100 }}
-          />
-        )}
-      </Card>
+        ))}
+      </div>
       <Modal
         title={k.createTitle}
         open={creating}
@@ -240,6 +241,48 @@ export function KeysPage(): ReactNode {
         </Form>
       </Modal>
       <Modal
+        title={k.rotateTitle}
+        open={Boolean(rotating)}
+        okText={k.rotate}
+        cancelText={k.cancel}
+        onCancel={() => {
+          setRotating(null);
+        }}
+        onOk={() => {
+          if (!rotating) {
+            return;
+          }
+          void rotateKey(bootstrap, rotating.id).then((body) => {
+            remember(body.key);
+            setRotating(null);
+            setRevealed(body.key);
+          });
+        }}
+      >
+        <p className="keys-reveal-body">{k.rotateBody}</p>
+      </Modal>
+      <Modal
+        title={k.removeTitle}
+        open={Boolean(removing)}
+        okText={k.remove}
+        cancelText={k.cancel}
+        okButtonProps={{ danger: true }}
+        onCancel={() => {
+          setRemoving(null);
+        }}
+        onOk={() => {
+          if (!removing) {
+            return;
+          }
+          void deleteKey(bootstrap, removing.id).then(async () => {
+            forgetSecret(removing.id);
+            await reload();
+            setRemoving(null);
+            void message.success(k.deleted);
+          });
+        }}
+      />
+      <Modal
         title={k.saveOnce}
         open={Boolean(revealed)}
         okText={k.copiedClose}
@@ -256,13 +299,9 @@ export function KeysPage(): ReactNode {
         }}
       >
         {revealed?.secret ? (
-          <div style={{ display: "grid", gap: 12 }}>
-            <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-              {k.saveOnceBody}
-            </Typography.Paragraph>
-            <Typography.Text code copyable>
-              {revealed.secret}
-            </Typography.Text>
+          <div className="keys-reveal">
+            <p className="keys-reveal-body">{k.saveOnceBody}</p>
+            <code className="keys-secret">{revealed.secret}</code>
           </div>
         ) : null}
       </Modal>

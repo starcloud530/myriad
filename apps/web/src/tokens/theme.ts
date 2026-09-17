@@ -1,41 +1,48 @@
 import type { ThemeConfig } from "antd";
 
-/** 万象色板：深夜底 + 亮朱砂。给模型和科技从业者用，不要土黄宣纸。 */
+/**
+ * OpenRouter 路线：纯黑画布 + 白字 + 灰阶。
+ * OneAPI / NewAPI 的浅蓝后台不要。朱砂只作 1px 提示，不当大面积填充。
+ */
 export const appToken: NonNullable<ThemeConfig["token"]> = {
-  colorBgBase: "#09090b",
-  colorBgLayout: "#09090b",
-  colorBgContainer: "#111113",
-  colorBgElevated: "#18181b",
-  colorText: "#f4f4f5",
-  colorTextSecondary: "#a1a1aa",
-  colorBorder: "#27272a",
-  colorBorderSecondary: "#1f1f23",
-  colorPrimary: "#ff4d3a",
-  colorInfo: "#ff4d3a",
-  colorError: "#fb7185",
-  colorSuccess: "#34d399",
-  colorLink: "#ff4d3a",
-  colorFillSecondary: "#18181b",
-  colorFillTertiary: "#1c1c20",
-  borderRadius: 10,
+  colorBgBase: "#000000",
+  colorBgLayout: "#000000",
+  colorBgContainer: "#111111",
+  colorBgElevated: "#1a1a1a",
+  colorText: "#ffffff",
+  colorTextSecondary: "#9ca3af",
+  colorBorder: "#2a2a2a",
+  colorBorderSecondary: "#1f1f1f",
+  colorPrimary: "#ffffff",
+  colorInfo: "#ffffff",
+  colorError: "#f87171",
+  colorSuccess: "#4ade80",
+  colorLink: "#d4d4d4",
+  colorFillSecondary: "#1a1a1a",
+  colorFillTertiary: "#141414",
+  borderRadius: 8,
   fontFamily: '"Inter", "SF Pro Text", "PingFang SC", "Segoe UI", sans-serif',
-  motionDurationMid: "0.16s",
+  motionDurationMid: "0.14s",
 };
 
-export const layoutBg = "#09090b";
-export const surfaceBg = "#111113";
-export const textPrimary = "#f4f4f5";
-export const textSecondary = "#a1a1aa";
-export const borderColor = "#27272a";
-export const accentColor = "#ff4d3a";
-export const errorColor = "#fb7185";
-export const codeBg = "#0c0c0f";
-export const codeFg = "#e4e4e7";
-export const liveColor = "#34d399";
-export const downColor = "#fb7185";
+export const layoutBg = "#000000";
+export const surfaceBg = "#111111";
+export const elevatedBg = "#1a1a1a";
+export const textPrimary = "#ffffff";
+export const textSecondary = "#9ca3af";
+export const textBody = "#d4d4d4";
+export const textFaint = "#6b7280";
+export const borderColor = "#2a2a2a";
+export const accentColor = "#ffffff";
+export const sparkColor = "#ff4d3a";
+export const errorColor = "#f87171";
+export const codeBg = "#080808";
+export const codeFg = "#ededed";
+export const liveColor = "#4ade80";
+export const downColor = "#f87171";
 export const pageMaxWidth = 1180;
 export const cardShadow = "none";
-export const paperRadius = 14;
-export const liveWash = "rgba(52, 211, 153, 0.12)";
-export const downWash = "rgba(251, 113, 133, 0.12)";
-export const accentWash = "rgba(255, 77, 58, 0.14)";
+export const paperRadius = 8;
+export const liveWash = "transparent";
+export const downWash = "transparent";
+export const accentWash = "rgba(255,255,255,0.06)";

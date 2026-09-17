@@ -32,7 +32,7 @@ export function ComingSoon({
               padding: "22px 22px 20px",
               background: surfaceBg,
               border: `1px solid ${borderColor}`,
-              borderRadius: 14,
+              borderRadius: 8,
               boxShadow: cardShadow,
               minHeight: 140,
             }}

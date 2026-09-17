@@ -1,7 +1,8 @@
 import type { PublicCapability } from "../features/capability/types.ts";
+import type { Locale } from "../i18n/locale.ts";
 import type { Messages } from "../i18n/messages.ts";
+import { vendorLabel } from "./labels.ts";
 import type { ModelRecord } from "./spec.ts";
-import { vendorMeta } from "./vendors.ts";
 
 export type ShelfStatus = "live" | "down" | "unwired";
 
@@ -41,20 +42,21 @@ export function unitLabel(model: ModelRecord, copy: Messages): string {
   return copy.labels.request;
 }
 
-function vendorNames(ids: string[]): string {
-  return ids.map((id) => vendorMeta(id).name).join(" · ");
+function vendorNames(ids: string[], locale: Locale): string {
+  return ids.map((id) => vendorLabel(id, locale)).join(" · ");
 }
 
 export function shelfHealth(
   model: ModelRecord,
   copy: Messages,
   capability?: PublicCapability | null,
+  locale: Locale = "en",
 ): ShelfHealth {
   if (!capability) {
     return { status: "unwired", label: copy.labels.offline, channels: copy.labels.unavailable };
   }
   if (!capability.enabled || !model.enabled) {
-    return { status: "down", label: copy.labels.disabled, channels: vendorNames(capability.channels.map((row) => row.vendor)) };
+    return { status: "down", label: copy.labels.disabled, channels: vendorNames(capability.channels.map((row) => row.vendor), locale) };
   }
   const live = capability.channels.filter((row) => row.enabled);
   if (live.length === 0) {
@@ -66,7 +68,7 @@ export function shelfHealth(
     status: "live",
     label: copy.labels.live,
     channels: fallback.length
-      ? `${vendorMeta(primary.vendor).name} · ${fallback.map((row) => vendorMeta(row.vendor).name).join(" / ")}`
-      : vendorMeta(primary.vendor).name,
+      ? `${vendorLabel(primary.vendor, locale)} · ${fallback.map((row) => vendorLabel(row.vendor, locale)).join(" / ")}`
+      : vendorLabel(primary.vendor, locale),
   };
 }

@@ -1,6 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useState } from "react";
+import { useLocale } from "../i18n/Locale.tsx";
 import { vendorLogoUrl } from "../lib/vendorLogos.ts";
+import { vendorLabel } from "./labels.ts";
 import { vendorMeta } from "./vendors.ts";
 
 export function VendorMark({
@@ -10,19 +12,22 @@ export function VendorMark({
   vendor: string;
   size?: number;
 }): ReactNode {
+  const { locale } = useLocale();
   const meta = vendorMeta(vendor);
+  const name = vendorLabel(vendor, locale);
   const src = vendorLogoUrl(vendor);
   const [failed, setFailed] = useState(false);
 
   if (src && !failed) {
     return (
       <span
-        title={meta.name}
+        title={name}
         style={{
           width: size,
           height: size,
-          borderRadius: Math.max(6, Math.round(size / 5)),
-          background: "#1a1a1f",
+          borderRadius: 6,
+          border: "1px solid #1f1f1f",
+          background: "#111",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
@@ -33,7 +38,7 @@ export function VendorMark({
       >
         <img
           src={src}
-          alt={meta.name}
+          alt={name}
           width={size}
           height={size}
           style={{
@@ -53,7 +58,8 @@ export function VendorMark({
   const style: CSSProperties = {
     width: size,
     height: size,
-    borderRadius: Math.max(6, Math.round(size / 5)),
+    borderRadius: 6,
+    border: "1px solid #1f1f1f",
     background: meta.bg,
     color: meta.fg,
     display: "inline-flex",
@@ -66,7 +72,7 @@ export function VendorMark({
     userSelect: "none",
   };
   return (
-    <span style={style} title={meta.name} aria-label={meta.name}>
+    <span style={style} title={name} aria-label={name}>
       {meta.mark}
     </span>
   );

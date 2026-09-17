@@ -5,3 +5,4 @@ export function publicAsset(path: string): string {
 }
 
 export const brandLogoSrc = publicAsset("logo.svg");
+export const brandLogoDarkSrc = publicAsset("logo-dark.svg");

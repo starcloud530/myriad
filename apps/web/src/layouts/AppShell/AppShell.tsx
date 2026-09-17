@@ -1,11 +1,13 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Layout } from "antd";
+import { Layout } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
+import { BrandMark } from "../../components/brand/BrandMark.tsx";
+import { GhostButton } from "../../components/ui/GhostButton.tsx";
+import { IconButton } from "../../components/ui/IconButton.tsx";
 import { LangSwitch } from "../../i18n/LangSwitch.tsx";
 import { useLocale } from "../../i18n/Locale.tsx";
-import { brandLogoSrc } from "../../lib/publicAsset.ts";
 import { borderColor, layoutBg, surfaceBg, textPrimary, textSecondary } from "../../tokens/theme.ts";
 import { SidebarNav } from "./SidebarNav.tsx";
 import { docsPath } from "./nav.tsx";
@@ -36,23 +38,21 @@ function HeaderBar({
 
   return (
     <Header style={headerStyle}>
-      <Button
-        type="text"
-        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        onClick={onToggle}
-      />
-      <img src={brandLogoSrc} alt="" width={26} height={26} style={{ display: "block" }} />
-      <span style={{ fontWeight: 680, color: textPrimary, letterSpacing: "0.06em", fontSize: 16 }}>{copy.brand}</span>
-      <span style={{ color: textSecondary, fontSize: 13 }}>{copy.console}</span>
+      <IconButton aria-label={collapsed ? "Expand menu" : "Collapse menu"} onClick={onToggle}>
+        {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+      </IconButton>
+      <BrandMark size={26} />
+      <span style={{ fontWeight: 600, color: textPrimary, letterSpacing: "0.04em", fontSize: 15 }}>{copy.brand}</span>
+      <span style={{ color: textSecondary, fontSize: 12 }}>{copy.console}</span>
       <div style={{ flex: 1 }} />
       <LangSwitch />
-      <Button
+      <GhostButton
         onClick={() => {
           void navigate(docsPath);
         }}
       >
         {copy.docs}
-      </Button>
+      </GhostButton>
     </Header>
   );
 }

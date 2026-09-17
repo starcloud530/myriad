@@ -26,7 +26,7 @@ export function TokenPicker({
     <div style={{ display: "grid", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <Select
-          style={{ minWidth: 280 }}
+          style={{ flex: 1, minWidth: 240 }}
           value={value}
           placeholder={copy.token.placeholder}
           options={keys

@@ -1,9 +1,11 @@
-import { Button, Layout } from "antd";
+import { Layout } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
+import { BrandMark } from "../../components/brand/BrandMark.tsx";
+import { GhostButton } from "../../components/ui/GhostButton.tsx";
+import { SolidButton } from "../../components/ui/SolidButton.tsx";
 import { LangSwitch } from "../../i18n/LangSwitch.tsx";
 import { useLocale } from "../../i18n/Locale.tsx";
-import { brandLogoSrc } from "../../lib/publicAsset.ts";
 import { useDocsLocale, useSwitchDocsLocale } from "../../pages/docs/DocsLocale.tsx";
 import { docsNav } from "../../pages/docs/docsNav.ts";
 import { docsHref } from "../../pages/docs/locale.ts";
@@ -35,23 +37,26 @@ export function DocsShell(): ReactNode {
           to={docsHref(locale, "quickstart")}
           style={{ display: "flex", alignItems: "center", gap: 8, color: textPrimary, textDecoration: "none" }}
         >
-          <img src={brandLogoSrc} alt="" width={22} height={22} />
-          <span style={{ fontWeight: 650, letterSpacing: "0.04em" }}>{copy.brand}</span>
+          <BrandMark size={22} />
+          <span style={{ fontWeight: 600, letterSpacing: "0.04em" }}>{copy.brand}</span>
           <span style={{ color: textSecondary, fontWeight: 400 }}>{copy.docs}</span>
         </Link>
         <div style={{ flex: 1 }} />
         <LangSwitch onSwitch={switchDocs} />
-        <Button type="link" href="https://github.com/starcloud530/myriad" target="_blank" rel="noreferrer">
+        <GhostButton
+          onClick={() => {
+            window.open("https://github.com/starcloud530/myriad", "_blank", "noreferrer");
+          }}
+        >
           {copy.github}
-        </Button>
-        <Button
-          type="primary"
+        </GhostButton>
+        <SolidButton
           onClick={() => {
             void navigate("/home");
           }}
         >
           {copy.console}
-        </Button>
+        </SolidButton>
       </Header>
       <Layout style={{ flex: 1, minHeight: 0 }}>
         <Sider
@@ -75,7 +80,7 @@ export function DocsShell(): ReactNode {
                       textDecoration: "none",
                       fontSize: 14,
                       padding: "5px 10px",
-                      borderLeft: isActive ? "2px solid #ff4d3a" : "2px solid transparent",
+                      borderLeft: isActive ? "2px solid #fff" : "2px solid transparent",
                       marginLeft: -2,
                     })}
                   >
