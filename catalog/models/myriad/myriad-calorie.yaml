@@ -1,0 +1,35 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: myriad-calorie
+vendor: myriad
+name: 卡路里识别
+# 上游调用名，原样传给适配器
+vendor_model: myriad-calorie
+
+# 七族之一：chat | complete | generate.image | generate.video | generate.audio
+#          | transduce | score.classify | score.regress | score.embed | extract | realtime
+# seed 第一期按 chat 接线占位；货架按抽取合同登记（从图像抽出卡路里结构化结果）
+kind: extract
+modality: image
+mode: sync
+# 挂到哪条北向能力；广场可以按型号拆卡，调用仍打这个 capability
+capability: calorie-recognize
+enabled: true
+
+description: |
+  万象自建，第一期先走接线。卡路里识别更接近抽取：从图片抽出食物与热量结构化结果。
+  seed 里暂按 chat 占位接线，本货架 kind 用 extract，厂商是万象，不是第三方渠道。
+
+# 同一物理型号被另一家服务商上架时，两份文件用同一 lineage 以后再合并
+lineage:
+  origin: myriad
+  origin_model: myriad-calorie
+
+# 对外标价快照，不是进货账、不是密钥。数字先空着就写 null，不要删掉整段。
+pricing:
+  unit: image
+  currency: CNY
+  as_of: 2026-09-16
+  source: estimate
+  image:
+    cny_per_unit: null

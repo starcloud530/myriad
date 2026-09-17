@@ -1,0 +1,22 @@
+{
+  "name": "@myriad/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "万象命令行入口。走 @myriad/sdk。",
+  "bin": {
+    "myriad": "./src/main.ts"
+  },
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@myriad/sdk": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}

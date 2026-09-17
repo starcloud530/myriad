@@ -1,0 +1,39 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: doubao-seedance-2-5
+vendor: volcengine
+name: Doubao-Seedance-2.5
+# 官方体验页 / 控制台型号名；自定义接入点仍以控制台 ep- 为准
+vendor_model: doubao-seedance-2-5-260628
+
+# 七族之一：chat | complete | generate.image | generate.video | generate.audio
+#          | transduce | score.classify | score.regress | score.embed | extract | realtime
+kind: generate.video
+modality: video
+mode: async
+# 挂到哪条北向能力；广场可以按型号拆卡，调用仍打这个 capability
+capability: video.generate
+enabled: true
+
+description: |
+  豆包 Seedance 2.5 主力视频生成。官方型号 doubao-seedance-2-5-260628，
+  见方舟体验页（gen_video）与豆包产品定价表，仍在售。强调长叙事、强参考、
+  准编辑。走异步任务 API。刊例按百万 tokens 计价（含视频输入 42、
+  无视频输入 70，元/百万 tokens），不公布按秒单价。
+  若账号走自定义推理接入点，具体接入点 ID 以方舟控制台为准。
+
+docs: https://ark.volcengine.com/region:cn-beijing/experience/gen_video?model=doubao-seedance-2-5-260628
+
+# 同一物理型号被另一家服务商上架时，两份文件用同一 lineage 以后再合并
+lineage:
+  origin: doubao
+  origin_model: doubao-seedance-2-5-260628
+
+# 对外标价快照，不是进货账、不是密钥。数字先空着就写 null，不要删掉整段。
+pricing:
+  unit: video_second
+  currency: CNY
+  as_of: 2026-09-16
+  source: official
+  second:
+    cny_per_unit: null

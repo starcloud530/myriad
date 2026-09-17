@@ -1,0 +1,43 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: deepseek-flash
+vendor: deepseek
+name: DeepSeek Flash
+# 上游调用名，原样传给适配器
+vendor_model: deepseek-flash
+
+# 七族之一：chat | complete | generate.image | generate.video | generate.audio
+#          | transduce | score.classify | score.regress | score.embed | extract | realtime
+kind: chat
+modality: text
+mode: sync
+# 挂到哪条北向能力；广场可以按型号拆卡，调用仍打这个 capability
+capability: chat
+enabled: true
+
+description: |
+  DeepSeek-V4.1-Flash，官方当前主力对话型号，支持思考/非思考切换与图像理解，上下文 1M。
+
+docs: https://api-docs.deepseek.com/zh-cn/quick_start/pricing
+
+# 同一物理型号被另一家服务商上架时，两份文件用同一 lineage 以后再合并
+lineage:
+  origin: deepseek
+  origin_model: deepseek-flash
+
+specs:
+  context_length: 1000000
+
+# 对外标价快照，不是进货账、不是密钥。数字先空着就写 null，不要删掉整段。
+# 官方高峰时段标价（空闲为高峰一半）；2026-09-16 查自模型 & 价格。
+pricing:
+  unit: token # token | image | audio_second | video_second | request
+  currency: CNY
+  as_of: 2026-09-16
+  source: official # official | estimate
+  prompt:
+    cny_per_million: 2
+  completion:
+    cny_per_million: 8
+  cache_read:
+    cny_per_million: 0.04

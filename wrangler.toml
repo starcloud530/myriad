@@ -1,6 +1,0 @@
-name = "myriad"
-main = "myriad/index.ts"
-compatibility_date = "2026-09-12"
-
-[vars]
-MYRIAD_ENV = "dev"

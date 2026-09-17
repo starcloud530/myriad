@@ -1,0 +1,11 @@
+name = "myriad"
+main = "src/index.ts"
+compatibility_date = "2026-09-12"
+
+[vars]
+MYRIAD_ENV = "dev"
+
+# 本地签发的产品密钥。部署时换成真实 namespace id。
+[[kv_namespaces]]
+binding = "MYRIAD_KEYS"
+id = "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"

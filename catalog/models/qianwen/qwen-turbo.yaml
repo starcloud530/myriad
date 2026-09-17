@@ -1,0 +1,43 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: qwen-turbo
+vendor: qianwen
+name: 通义千问 Turbo
+# 上游调用名，原样传给适配器
+vendor_model: qwen-turbo
+
+# 七族之一：chat | complete | generate.image | generate.video | generate.audio
+#          | transduce | score.classify | score.regress | score.embed | extract | realtime
+kind: chat
+modality: text
+mode: sync
+# 挂到哪条北向能力；广场可以按型号拆卡，调用仍打这个 capability
+capability: chat
+enabled: true
+
+description: |
+  通义千问 Turbo，同系列里更轻更快的文本型号，适合高并发、低成本日常对话；支持思考/非思考切换，思考模式输出另有官方单价。
+
+docs: https://help.aliyun.com/zh/model-studio/qwen-turbo
+
+# 同一物理型号被另一家服务商上架时，两份文件用同一 lineage 以后再合并
+lineage:
+  origin: qwen
+  origin_model: qwen-turbo
+
+specs:
+  context_length: 131072
+
+# 对外标价快照，不是进货账、不是密钥。数字先空着就写 null，不要删掉整段。
+# 中国内地（华北2）实时推理、非思考模式。
+pricing:
+  unit: token # token | image | audio_second | video_second | request
+  currency: CNY
+  as_of: 2026-09-16
+  source: official # official | estimate
+  prompt:
+    cny_per_million: 0.3
+  completion:
+    cny_per_million: 0.6
+  cache_read:
+    cny_per_million: 0.06

@@ -1,0 +1,37 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: gpt-image-2
+vendor: fal
+name: GPT Image 2
+# 上游调用名，原样传给适配器
+vendor_model: fal-ai/gpt-image-2
+
+# 七族之一：chat | complete | generate.image | generate.video | generate.audio
+#          | transduce | score.classify | score.regress | score.embed | extract | realtime
+kind: generate.image
+modality: image
+mode: sync
+# 挂到哪条北向能力；广场可以按型号拆卡，调用仍打这个 capability
+capability: image.generate
+enabled: true
+
+description: |
+  OpenAI GPT Image 2 文生图，经 fal 上架。支持细排版与最高约 4K。
+  默认 quality=high、image_size=landscape_4_3。传入 refs[] 时走 gpt-image-2-edit。
+
+docs: https://fal.ai/models/fal-ai/gpt-image-2
+
+# 同一物理型号被另一家服务商上架时，两份文件用同一 lineage 以后再合并
+lineage:
+  origin: openai
+  origin_model: gpt-image-2
+
+# 对外标价快照，不是进货账、不是密钥。数字先空着就写 null，不要删掉整段。
+# 官方刊例按尺寸/质量浮动；此处取默认 high + 1024×768 = $0.145，按 6.72 折人民币。
+pricing:
+  unit: image
+  currency: CNY
+  as_of: 2026-09-16
+  source: estimate
+  image:
+    cny_per_unit: 0.97

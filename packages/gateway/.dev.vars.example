@@ -1,0 +1,6 @@
+# 从仓库外 现有服务厂商模型/.env 拷同名变量到本文件（本文件可提交）。
+# 真正的 .dev.vars 不入库。上线用 wrangler secret put。
+DEEPSEEK_API_KEY=
+QIANWEN_API_KEY=
+FAL_API_KEY=
+VOLCENGINE_API_KEY=

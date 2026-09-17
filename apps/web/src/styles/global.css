@@ -1,0 +1,43 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #f3efe6;
+  color: #161412;
+  font-family: "Source Han Sans SC", "Noto Sans SC", "PingFang SC", "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+.workbench-tabs .ant-tabs-nav {
+  margin: 0;
+}
+
+.workbench-tabs .ant-tabs-nav::before {
+  border-bottom: none;
+}
+
+.workbench-tabs .ant-tabs-content-holder {
+  display: none;
+}
+
+.ant-layout {
+  background: #f3efe6;
+}
+
+.ant-menu-light {
+  background: transparent;
+}
+
+.model-card {
+  transition: border-color 0.16s ease, transform 0.16s ease;
+}
+
+.model-card:hover {
+  border-color: #b5442f;
+}

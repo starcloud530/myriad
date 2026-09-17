@@ -1,0 +1,51 @@
+# 复制到 models/<vendor>/<id>.yaml
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: deepseek-chat
+vendor: deepseek
+name: DeepSeek Chat
+# 上游调用名，原样传给适配器
+vendor_model: deepseek-chat
+
+# 七族之一：chat | complete | generate.image | generate.video | generate.audio
+#          | transduce | score.classify | score.regress | score.embed | extract | realtime
+kind: chat
+modality: text
+mode: sync
+# 挂到哪条北向能力；广场可以按型号拆卡，调用仍打这个 capability
+capability: chat
+enabled: true
+
+description: |
+  一句话介绍。给广场「介绍」页用。
+
+docs: https://api-docs.deepseek.com
+
+# 同一物理型号被另一家服务商上架时，两份文件用同一 lineage 以后再合并
+lineage:
+  origin: deepseek
+  origin_model: deepseek-chat
+
+specs:
+  context_length: 65536
+  # 没有的键删掉，不要填假数
+
+# 对外标价快照，不是进货账、不是密钥。数字先空着就写 null，不要删掉整段。
+pricing:
+  unit: token # token | image | audio_second | video_second | request
+  currency: CNY
+  as_of: 2026-09-16
+  source: official # official | estimate
+  # unit=token：按百万 token，广场比「每 token 0.000002」好读
+  prompt:
+    cny_per_million: null
+  completion:
+    cny_per_million: null
+  cache_read:
+    cny_per_million: null
+  # unit=image 时改用下面，删掉 prompt/completion
+  # image:
+  #   cny_per_unit: null
+  # unit=video_second / audio_second
+  # second:
+  #   cny_per_unit: null

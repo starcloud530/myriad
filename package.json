@@ -3,19 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "万象 / Myriad — 能力聚合平台。下游只对接万象，不对接具体模型。",
+  "description": "万象 / Myriad — 能力聚合中台。下游只对接万象；TS 服务用 @myriad/sdk。",
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260911.1",
-    "typescript": "^5.9.2",
-    "wrangler": "^4.34.0"
+    "dev": "npm run dev -w @myriad/gateway",
+    "dev:web": "npm run dev -w @myriad/web",
+    "dev:cli": "npm run start -w @myriad/cli --",
+    "deploy": "npm run deploy -w @myriad/gateway",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "assets:upload": "node ../../assets/vendors/upload-to-r2.mjs"
   }
 }
