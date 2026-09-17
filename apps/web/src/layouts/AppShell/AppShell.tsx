@@ -3,12 +3,10 @@ import { Button, Dropdown, Layout, Tag } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
-import { vendorLogoUrl } from "../../lib/vendorLogos.ts";
+import { brandLogoSrc } from "../../lib/publicAsset.ts";
 import { borderColor, layoutBg, surfaceBg, textPrimary } from "../../tokens/theme.ts";
 import { SidebarNav } from "./SidebarNav.tsx";
 import { docsPath } from "./nav.tsx";
-
-const myriadMark = vendorLogoUrl("myriad");
 
 const { Header, Sider, Content } = Layout;
 
@@ -40,9 +38,7 @@ function HeaderBar({
         icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         onClick={onToggle}
       />
-      {myriadMark ? (
-        <img src={myriadMark} alt="" width={22} height={22} style={{ display: "block" }} />
-      ) : null}
+      <img src={brandLogoSrc} alt="" width={22} height={22} style={{ display: "block" }} />
       <span style={{ fontWeight: 650, color: textPrimary, whiteSpace: "nowrap", letterSpacing: "0.04em" }}>万象</span>
       <div style={{ flex: 1 }} />
       <Tag bordered={false}>开发环境</Tag>

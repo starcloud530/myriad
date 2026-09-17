@@ -10,10 +10,12 @@ if (!root) {
   throw new Error("#app missing");
 }
 
+const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || undefined;
+
 createRoot(root).render(
   <StrictMode>
     <AppProviders>
-      <BrowserRouter>
+      <BrowserRouter basename={basename === "" ? undefined : basename}>
         <AppRoutes />
       </BrowserRouter>
     </AppProviders>

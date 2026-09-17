@@ -1,13 +1,11 @@
 # Docs
 
-Canonical documentation is the product site, not this folder.
+Canonical documentation is on GitHub Pages:
 
-| Page | Path |
+| Page | URL |
 |---|---|
-| Quickstart | `/docs/quickstart` |
-| API | `/docs/api` |
-| TypeScript SDK | `/docs/sdk` |
-| API keys | `/docs/keys` |
-| Errors | `/docs/errors` |
-
-Local: [http://127.0.0.1:18081/docs/quickstart](http://127.0.0.1:18081/docs/quickstart).
+| Quickstart | https://starcloud530.github.io/myriad/docs/quickstart |
+| API | https://starcloud530.github.io/myriad/docs/api |
+| TypeScript SDK | https://starcloud530.github.io/myriad/docs/sdk |
+| API keys | https://starcloud530.github.io/myriad/docs/keys |
+| Errors | https://starcloud530.github.io/myriad/docs/errors |

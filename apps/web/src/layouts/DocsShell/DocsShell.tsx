@@ -1,11 +1,9 @@
 import { Button, Layout } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
+import { brandLogoSrc } from "../../lib/publicAsset.ts";
 import { docsNav } from "../../pages/docs/docsNav.ts";
-import { vendorLogoUrl } from "../../lib/vendorLogos.ts";
 import { borderColor, layoutBg, surfaceBg, textPrimary, textSecondary } from "../../tokens/theme.ts";
-
-const myriadMark = vendorLogoUrl("myriad");
 const { Header, Sider, Content } = Layout;
 
 const headerStyle: CSSProperties = {
@@ -26,7 +24,7 @@ export function DocsShell(): ReactNode {
     <Layout style={{ height: "100vh", background: layoutBg }}>
       <Header style={headerStyle}>
         <Link to="/docs/quickstart" style={{ display: "flex", alignItems: "center", gap: 8, color: textPrimary, textDecoration: "none" }}>
-          {myriadMark ? <img src={myriadMark} alt="" width={22} height={22} /> : null}
+          <img src={brandLogoSrc} alt="" width={22} height={22} />
           <span style={{ fontWeight: 650, letterSpacing: "0.04em" }}>万象</span>
           <span style={{ color: textSecondary, fontWeight: 400 }}>Docs</span>
         </Link>

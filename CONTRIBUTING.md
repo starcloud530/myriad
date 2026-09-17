@@ -1,6 +1,6 @@
 # 参与万象
 
-先读产品文档 [`/docs/quickstart`](http://127.0.0.1:18081/docs/quickstart)。提 PR 前 `npm run typecheck`。
+先读 [Quickstart](https://starcloud530.github.io/myriad/docs/quickstart)。提 PR 前 `npm run typecheck`。
 
 ## 放哪
 

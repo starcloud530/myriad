@@ -17,9 +17,12 @@ import { PlaygroundDetailPage } from "../pages/playground/PlaygroundDetailPage.t
 import { PlaygroundPage } from "../pages/playground/PlaygroundPage.tsx";
 import { UsagePage } from "../pages/usage/UsagePage.tsx";
 
+const landing = import.meta.env.PROD ? "/docs/quickstart" : "/home";
+
 export function AppRoutes(): ReactNode {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to={landing} replace />} />
       <Route element={<DocsShell />}>
         <Route path="/docs" element={<Navigate to="/docs/quickstart" replace />} />
         <Route path="/docs/quickstart" element={<QuickstartPage />} />
@@ -30,7 +33,6 @@ export function AppRoutes(): ReactNode {
         <Route path="/docs/*" element={<Navigate to="/docs/quickstart" replace />} />
       </Route>
       <Route element={<AppShell />}>
-        <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/keys" element={<KeysPage />} />
         <Route path="/playground" element={<PlaygroundPage />} />

@@ -1,9 +1,29 @@
-# Myriad
+<p align="center">
+  <img src="docs/logo.svg" width="88" alt="Myriad" />
+</p>
 
-[![CI](https://github.com/starcloud530/myriad/actions/workflows/ci.yml/badge.svg)](https://github.com/starcloud530/myriad/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-b5442f.svg)](LICENSE)
+<h1 align="center">Myriad</h1>
 
-One HTTP contract for chat, image, video, speech, and a few extractors. You `POST` a capability id with a Bearer product key. The gateway picks the channel.
+<p align="center">
+  One HTTP contract for chat, image, video, and speech.
+</p>
+
+<p align="center">
+  <a href="https://starcloud530.github.io/myriad/docs/quickstart">Docs</a>
+  ·
+  <a href="https://starcloud530.github.io/myriad/docs/api">API</a>
+  ·
+  <a href="https://starcloud530.github.io/myriad/docs/sdk">SDK</a>
+  ·
+  <a href="LICENSE">License</a>
+  ·
+  <a href="https://github.com/starcloud530/myriad/issues">Issues</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/starcloud530/myriad/actions/workflows/ci.yml"><img src="https://github.com/starcloud530/myriad/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-b5442f.svg" alt="MIT" /></a>
+</p>
 
 ```ts
 import { createMyriad } from "@myriad/sdk";
@@ -18,7 +38,7 @@ const { output } = await myriad.invoke("chat", {
 });
 ```
 
-The path is always `/v1/capabilities/:id`. There is no OpenAI-compat `/v1/models` or `/v1/chat/completions`.
+The path is always `POST /v1/capabilities/:id`. There is no OpenAI-compat `/v1/models` or `/v1/chat/completions`.
 
 ## Capabilities
 
@@ -34,15 +54,13 @@ The path is always `/v1/capabilities/:id`. There is no OpenAI-compat `/v1/models
 
 ## Docs
 
-Hosted in the product:
+Published on GitHub Pages:
 
-| Page | Local |
-|---|---|
-| Quickstart | [http://127.0.0.1:18081/docs/quickstart](http://127.0.0.1:18081/docs/quickstart) |
-| API | [http://127.0.0.1:18081/docs/api](http://127.0.0.1:18081/docs/api) |
-| TypeScript SDK | [http://127.0.0.1:18081/docs/sdk](http://127.0.0.1:18081/docs/sdk) |
-| API keys | [http://127.0.0.1:18081/docs/keys](http://127.0.0.1:18081/docs/keys) |
-| Errors | [http://127.0.0.1:18081/docs/errors](http://127.0.0.1:18081/docs/errors) |
+- [Quickstart](https://starcloud530.github.io/myriad/docs/quickstart)
+- [API](https://starcloud530.github.io/myriad/docs/api)
+- [TypeScript SDK](https://starcloud530.github.io/myriad/docs/sdk)
+- [API keys](https://starcloud530.github.io/myriad/docs/keys)
+- [Errors](https://starcloud530.github.io/myriad/docs/errors)
 
 ## Run
 
@@ -52,10 +70,10 @@ cd myriad
 npm install
 # Southbound vendor keys → packages/gateway/.dev.vars (never commit)
 npm run dev          # gateway :8791
-npm run dev:web      # console + docs :18081
+npm run dev:web      # local console :18081
 ```
 
-Issue a product key in Console → API Keys (`sk-myriad-…`, hashed in `MYRIAD_KEYS`). Vendor secrets stay in Worker Secrets. TypeScript services depend on `@myriad/sdk` (workspace). Do not import `@myriad/gateway`.
+Issue a product key in Console → API Keys. Vendor secrets stay in Worker Secrets. TypeScript services depend on `@myriad/sdk` (workspace). Do not import `@myriad/gateway`.
 
 ## License
 

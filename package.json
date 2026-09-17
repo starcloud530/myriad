@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "万象 / Myriad — 能力聚合中台。下游只对接万象；TS 服务用 @myriad/sdk。",
+  "homepage": "https://starcloud530.github.io/myriad/docs/quickstart",
   "license": "MIT",
   "engines": {
     "node": ">=20"
