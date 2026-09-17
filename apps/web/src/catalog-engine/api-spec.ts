@@ -345,7 +345,7 @@ export function sampleBody(kind: ModelKind): { input: Record<string, unknown> } 
 
 export function sampleCurl(model: ModelRecord): string {
   return buildCurl({
-    origin: "http://127.0.0.1:8788",
+    origin: "http://127.0.0.1:8791",
     path: requestPath(model.capability),
     token: "$MYRIAD_KEY",
     input: sampleInput(model.kind),

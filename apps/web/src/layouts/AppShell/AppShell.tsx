@@ -1,7 +1,7 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Layout, Tag } from "antd";
 import type { CSSProperties, ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { vendorLogoUrl } from "../../lib/vendorLogos.ts";
 import { borderColor, layoutBg, surfaceBg, textPrimary } from "../../tokens/theme.ts";
@@ -63,6 +63,10 @@ function HeaderBar({
 
 export function AppShell(): ReactNode {
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    document.title = "万象";
+  }, []);
 
   return (
     <Layout style={{ height: "100vh" }}>

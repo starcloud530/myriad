@@ -49,4 +49,4 @@ export const navItems: NavItem[] = [
   },
 ];
 
-export const docsPath = "/docs";
+export const docsPath = "/docs/quickstart";
