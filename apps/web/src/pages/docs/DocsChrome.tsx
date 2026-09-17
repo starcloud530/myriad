@@ -2,7 +2,9 @@ import type { CSSProperties, ReactNode } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router";
 import { accentColor, borderColor, textPrimary, textSecondary } from "../../tokens/theme.ts";
+import { useDocsLocale } from "./DocsLocale.tsx";
 import { docsNav } from "./docsNav.ts";
+import { docsHref, type DocsSlug } from "./locale.ts";
 
 const h1: CSSProperties = {
   margin: "0 0 12px",
@@ -34,10 +36,11 @@ const p: CSSProperties = {
 };
 
 export function DocsH1({ children }: { children: ReactNode }): ReactNode {
+  const locale = useDocsLocale();
   const title = typeof children === "string" ? children : "Docs";
   useEffect(() => {
-    document.title = `${title} · 万象 Docs`;
-  }, [title]);
+    document.title = locale === "zh" ? `${title} · 万象` : `${title} · Myriad`;
+  }, [locale, title]);
   return <h1 style={h1}>{children}</h1>;
 }
 
@@ -68,7 +71,7 @@ export function DocsCallout({
         border: `1px solid ${borderColor}`,
         borderLeft: `3px solid ${accentColor}`,
         borderRadius: 8,
-        background: "#fffaf3",
+        background: "rgba(255, 77, 58, 0.08)",
         fontSize: 14,
         lineHeight: 1.65,
         color: textPrimary,
@@ -134,6 +137,15 @@ export function DocsTable({
   );
 }
 
+export function DocsInlink({ slug, children }: { slug: DocsSlug; children: ReactNode }): ReactNode {
+  const locale = useDocsLocale();
+  return (
+    <Link to={docsHref(locale, slug)} style={{ color: accentColor }}>
+      {children}
+    </Link>
+  );
+}
+
 export function DocsCode({ children }: { children: ReactNode }): ReactNode {
   return (
     <code
@@ -141,7 +153,7 @@ export function DocsCode({ children }: { children: ReactNode }): ReactNode {
         fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
         fontSize: "0.9em",
         padding: "1px 6px",
-        background: "#f3efe6",
+        background: "#1c1c22",
         borderRadius: 4,
       }}
     >
@@ -150,9 +162,10 @@ export function DocsCode({ children }: { children: ReactNode }): ReactNode {
   );
 }
 
-export function DocsPager({ current }: { current: string }): ReactNode {
-  const links = docsNav.flatMap((group) => group.items);
-  const index = links.findIndex((item) => item.path === current);
+export function DocsPager({ current }: { current: DocsSlug }): ReactNode {
+  const locale = useDocsLocale();
+  const links = docsNav(locale).flatMap((group) => group.items);
+  const index = links.findIndex((item) => item.slug === current);
   const prev = index > 0 ? links[index - 1] : undefined;
   const next = index >= 0 && index < links.length - 1 ? links[index + 1] : undefined;
 

@@ -26,7 +26,7 @@ export function TokenPicker({
         <Select
           style={{ minWidth: 280 }}
           value={value}
-          placeholder="选择一把产品密钥"
+          placeholder="选择密钥"
           options={keys
             .filter((row) => row.status === "active")
             .map((row) => ({

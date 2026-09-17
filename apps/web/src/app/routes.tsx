@@ -7,6 +7,7 @@ import { ChannelsPage } from "../pages/dev/ChannelsPage.tsx";
 import { OpsPage } from "../pages/dev/OpsPage.tsx";
 import { PricingRulesPage } from "../pages/dev/PricingRulesPage.tsx";
 import { ApiPage } from "../pages/docs/ApiPage.tsx";
+import { DocsIndexRedirect, DocsLegacyRedirect, DocsLocaleGate } from "../pages/docs/DocsLocale.tsx";
 import { ErrorsPage } from "../pages/docs/ErrorsPage.tsx";
 import { KeysGuidePage } from "../pages/docs/KeysGuidePage.tsx";
 import { QuickstartPage } from "../pages/docs/QuickstartPage.tsx";
@@ -17,20 +18,33 @@ import { PlaygroundDetailPage } from "../pages/playground/PlaygroundDetailPage.t
 import { PlaygroundPage } from "../pages/playground/PlaygroundPage.tsx";
 import { UsagePage } from "../pages/usage/UsagePage.tsx";
 
-const landing = import.meta.env.PROD ? "/docs/quickstart" : "/home";
+const landing = import.meta.env.PROD ? "/docs" : "/home";
 
 export function AppRoutes(): ReactNode {
   return (
     <Routes>
       <Route path="/" element={<Navigate to={landing} replace />} />
-      <Route element={<DocsShell />}>
-        <Route path="/docs" element={<Navigate to="/docs/quickstart" replace />} />
-        <Route path="/docs/quickstart" element={<QuickstartPage />} />
-        <Route path="/docs/api" element={<ApiPage />} />
-        <Route path="/docs/sdk" element={<SdkPage />} />
-        <Route path="/docs/keys" element={<KeysGuidePage />} />
-        <Route path="/docs/errors" element={<ErrorsPage />} />
-        <Route path="/docs/*" element={<Navigate to="/docs/quickstart" replace />} />
+      <Route path="/docs" element={<DocsIndexRedirect />} />
+      <Route path="/docs/quickstart" element={<DocsLegacyRedirect slug="quickstart" />} />
+      <Route path="/docs/api" element={<DocsLegacyRedirect slug="api" />} />
+      <Route path="/docs/sdk" element={<DocsLegacyRedirect slug="sdk" />} />
+      <Route path="/docs/keys" element={<DocsLegacyRedirect slug="keys" />} />
+      <Route path="/docs/errors" element={<DocsLegacyRedirect slug="errors" />} />
+      <Route
+        path="/docs/:lang"
+        element={
+          <DocsLocaleGate>
+            <DocsShell />
+          </DocsLocaleGate>
+        }
+      >
+        <Route index element={<Navigate to="quickstart" replace />} />
+        <Route path="quickstart" element={<QuickstartPage />} />
+        <Route path="api" element={<ApiPage />} />
+        <Route path="sdk" element={<SdkPage />} />
+        <Route path="keys" element={<KeysGuidePage />} />
+        <Route path="errors" element={<ErrorsPage />} />
+        <Route path="*" element={<Navigate to="quickstart" replace />} />
       </Route>
       <Route element={<AppShell />}>
         <Route path="/home" element={<HomePage />} />

@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { UnwiredHint } from "../../components/biz/UnwiredHint.tsx";
+import { ComingSoon } from "../../components/biz/ComingSoon.tsx";
 
 export function BillingPage(): ReactNode {
   return (
-    <UnwiredHint
+    <ComingSoon
       title="账单"
-      detail="结算未接通。没有余额、没有账期。顶栏那枚徽章只说明当前是开发环境。"
+      description="月度账单、发票与支付方式将在这里管理。"
+      points={["按账期查看消费", "下载发票", "设置余额与额度"]}
     />
   );
 }

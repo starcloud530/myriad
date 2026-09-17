@@ -1,10 +1,14 @@
-import { Empty, Input, Segmented, Typography } from "antd";
+import { Empty, Input, Segmented } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { useMemo, useState } from "react";
+import { PageFrame } from "../components/biz/PageFrame.tsx";
+import { PageHeader } from "../components/biz/PageHeader.tsx";
+import { StatRow } from "../components/biz/StatRow.tsx";
 import { useCatalog } from "../features/capability/useCatalog.ts";
 import { getDevApiKey } from "../lib/devKey.ts";
 import { textSecondary } from "../tokens/theme.ts";
 import { ModelCard } from "./Card.tsx";
+import { shelfHealth } from "./health.ts";
 import { filterModels, listModels } from "./load.ts";
 import { modalityLabel } from "./price.ts";
 import type { ModelRecord } from "./spec.ts";
@@ -14,8 +18,8 @@ import { groupByVendor, vendorMeta } from "./vendors.ts";
 
 const gridStyle: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-  gap: 12,
+  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+  gap: 16,
 };
 
 const filters: Array<{ label: string; value: "all" | ModelRecord["modality"] }> = [
@@ -27,9 +31,11 @@ const filters: Array<{ label: string; value: "all" | ModelRecord["modality"] }> 
 ];
 
 export function ModelShelf({
+  eyebrow,
   title,
   intro,
 }: {
+  eyebrow?: string;
   title: string;
   intro?: string;
 }): ReactNode {
@@ -42,20 +48,21 @@ export function ModelShelf({
 
   const visible = useMemo(() => filterModels(all, query, modality), [all, modality, query]);
   const vendorGroups = useMemo(() => groupByVendor(visible), [visible]);
+  const liveCount = all.filter((model) => shelfHealth(model, byId.get(model.capability)).status === "live").length;
+  const vendorCount = new Set(all.map((model) => model.vendor)).size;
 
   return (
-    <div style={{ display: "grid", gap: 16, width: "100%" }}>
-      <div>
-        <Typography.Title level={3} style={{ margin: 0 }}>
-          {title}
-        </Typography.Title>
-        {intro ? (
-          <Typography.Paragraph style={{ color: textSecondary, margin: "6px 0 0" }}>{intro}</Typography.Paragraph>
-        ) : null}
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+    <PageFrame>
+      <PageHeader eyebrow={eyebrow} title={title} description={intro} />
+      <StatRow
+        items={[
+          { label: "模型", value: String(all.length) },
+          { label: "厂商", value: String(vendorCount) },
+          { label: "可用", value: String(liveCount) },
+        ]}
+      />
+      <div className="paper-toolbar">
         <Segmented
-          size="small"
           options={filters}
           value={modality}
           onChange={(value) => {
@@ -64,9 +71,8 @@ export function ModelShelf({
         />
         <Input.Search
           allowClear
-          size="small"
-          placeholder="搜索型号、厂商或介绍"
-          style={{ width: 260 }}
+          placeholder="搜索模型或厂商"
+          style={{ width: 280 }}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -74,11 +80,10 @@ export function ModelShelf({
         />
         <div style={{ marginLeft: "auto" }}>
           <Segmented
-            size="small"
             value={layout}
             options={[
-              { label: "模型", value: "model" },
-              { label: "厂商", value: "vendor" },
+              { label: "按模型", value: "model" },
+              { label: "按厂商", value: "vendor" },
             ]}
             onChange={(value) => {
               setLayout(value as "model" | "vendor");
@@ -87,7 +92,7 @@ export function ModelShelf({
         </div>
       </div>
       {visible.length === 0 ? (
-        <Empty description={all.length === 0 ? "catalog/models 里还没有型号文件。" : "没有匹配的模型"} />
+        <Empty description={all.length === 0 ? "还没有可展示的模型" : "没有匹配的模型"} />
       ) : layout === "model" ? (
         <section style={gridStyle}>
           {visible.map((model) => (
@@ -95,20 +100,16 @@ export function ModelShelf({
           ))}
         </section>
       ) : (
-        <div style={{ display: "grid", gap: 22 }}>
+        <div style={{ display: "grid", gap: 32 }}>
           {vendorGroups.map((group) => {
             const meta = vendorMeta(group.vendor);
             return (
-              <section key={group.vendor} style={{ display: "grid", gap: 10 }}>
+              <section key={group.vendor} style={{ display: "grid", gap: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <VendorMark vendor={group.vendor} size={28} />
+                  <VendorMark vendor={group.vendor} size={32} />
                   <div>
-                    <Typography.Title level={5} style={{ margin: 0 }}>
-                      {meta.name}
-                    </Typography.Title>
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {group.vendor === "myriad" ? "自建" : "渠道"} · {group.items.length}
-                    </Typography.Text>
+                    <div style={{ fontWeight: 680 }}>{meta.name}</div>
+                    <div style={{ fontSize: 12, color: textSecondary }}>{group.items.length} 个模型</div>
                   </div>
                 </div>
                 <div style={gridStyle}>
@@ -121,6 +122,6 @@ export function ModelShelf({
           })}
         </div>
       )}
-    </div>
+    </PageFrame>
   );
 }

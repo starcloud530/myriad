@@ -1,5 +1,6 @@
 import type { PublicCapability } from "../features/capability/types.ts";
 import type { ModelRecord } from "./spec.ts";
+import { vendorMeta } from "./vendors.ts";
 
 export type ShelfStatus = "live" | "down" | "unwired";
 
@@ -39,16 +40,20 @@ export function unitLabel(model: ModelRecord): string {
   return "次";
 }
 
+function vendorNames(ids: string[]): string {
+  return ids.map((id) => vendorMeta(id).name).join(" · ");
+}
+
 export function shelfHealth(model: ModelRecord, capability?: PublicCapability | null): ShelfHealth {
   if (!capability) {
-    return { status: "unwired", label: "未接通", channels: "网关未登记该能力" };
+    return { status: "unwired", label: "离线", channels: "暂不可用" };
   }
   if (!capability.enabled || !model.enabled) {
-    return { status: "down", label: "停用", channels: capability.channels.map((row) => row.vendor).join(" · ") };
+    return { status: "down", label: "停用", channels: vendorNames(capability.channels.map((row) => row.vendor)) };
   }
   const live = capability.channels.filter((row) => row.enabled);
   if (live.length === 0) {
-    return { status: "down", label: "无渠道", channels: "" };
+    return { status: "down", label: "暂不可用", channels: "" };
   }
   const primary = live.find((row) => row.role === "primary") ?? live[0];
   const fallback = live.filter((row) => row.role === "fallback");
@@ -56,7 +61,7 @@ export function shelfHealth(model: ModelRecord, capability?: PublicCapability | 
     status: "live",
     label: "可用",
     channels: fallback.length
-      ? `${primary.vendor} 主 · ${fallback.map((row) => row.vendor).join("/")} 兜底`
-      : `${primary.vendor} 主渠道`,
+      ? `${vendorMeta(primary.vendor).name} · ${fallback.map((row) => vendorMeta(row.vendor).name).join(" / ")}`
+      : vendorMeta(primary.vendor).name,
   };
 }

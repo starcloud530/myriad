@@ -56,10 +56,10 @@ export function CapabilityApiDocs({
 
   return (
     <div style={{ display: "grid", gap: 28, maxWidth: 820 }}>
-      <Steps size="small" current={step} items={[{ title: "选择 Token" }, { title: "选择接口" }]} />
+      <Steps current={step} items={[{ title: "选择密钥" }, { title: "选择接口" }]} />
 
       <section style={{ display: "grid", gap: 10 }}>
-        <Typography.Text strong>1. Token</Typography.Text>
+        <Typography.Text strong>1. 密钥</Typography.Text>
         <TokenPicker
           keys={keys}
           value={selectedId}
@@ -102,7 +102,7 @@ export function CapabilityApiDocs({
             </Button>
             {!endpoint.runnable ? (
               <Typography.Text type="secondary" style={{ marginLeft: 12 }}>
-                这个合同本期没有渠道。
+                该接口暂未开放测试。
               </Typography.Text>
             ) : null}
           </div>

@@ -10,7 +10,7 @@ export const modalityLabel: Record<ModelRecord["modality"], string> = {
 
 export const modeLabel: Record<ModelRecord["mode"], string> = {
   sync: "同步",
-  async: "异步 job",
+  async: "异步",
 };
 
 function yuan(value: number): string {
@@ -44,7 +44,7 @@ export function priceSummary(pricing: ModelPricing): string {
 export function modelTags(model: ModelRecord): string[] {
   const tags = [modalityLabel[model.modality], modeLabel[model.mode], priceSummary(model.pricing)];
   if (model.vendor === "myriad") {
-    tags.push("自建");
+    tags.push("万象");
   }
   if (model.pricing.source === "estimate") {
     tags.push("估价");

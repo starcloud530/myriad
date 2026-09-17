@@ -7,7 +7,7 @@ export interface VendorMeta {
 }
 
 const vendors: Record<string, VendorMeta> = {
-  myriad: { id: "myriad", name: "万象", mark: "万", bg: "#161412", fg: "#f5efe6" },
+  myriad: { id: "myriad", name: "万象", mark: "万", bg: "#ff4d3a", fg: "#09090b" },
   deepseek: { id: "deepseek", name: "DeepSeek", mark: "DS", bg: "#4D6BFE", fg: "#ffffff" },
   qianwen: { id: "qianwen", name: "通义千问", mark: "千", bg: "#615CED", fg: "#ffffff" },
   fal: { id: "fal", name: "fal", mark: "fa", bg: "#111111", fg: "#ffffff" },

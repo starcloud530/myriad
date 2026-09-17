@@ -8,10 +8,81 @@ body,
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: #f3efe6;
-  color: #161412;
-  font-family: "Source Han Sans SC", "Noto Sans SC", "PingFang SC", "Segoe UI", sans-serif;
+  background: #09090b;
+  color: #f4f4f5;
+  font-family: "Inter", "SF Pro Text", "PingFang SC", "Segoe UI", sans-serif;
   line-height: 1.5;
+  color-scheme: dark;
+}
+
+.ant-layout {
+  background: #09090b;
+}
+
+.ant-menu,
+.ant-menu-dark,
+.ant-menu-light {
+  background: transparent !important;
+}
+
+.ant-menu-item,
+.ant-menu-submenu-title {
+  margin-inline: 8px !important;
+  width: calc(100% - 16px) !important;
+  border-radius: 8px !important;
+}
+
+.ant-menu-item-selected {
+  background: rgba(255, 77, 58, 0.14) !important;
+  color: #ff7a6b !important;
+  font-weight: 600;
+}
+
+.ant-menu-item-selected::after {
+  display: none !important;
+}
+
+.ant-card {
+  border-radius: 14px;
+  background: #111113;
+  border-color: #27272a;
+  box-shadow: none;
+}
+
+.ant-table-wrapper .ant-table {
+  background: transparent;
+}
+
+.model-card {
+  transition: border-color 0.16s ease, transform 0.16s ease, background 0.16s ease;
+}
+
+.model-card:hover {
+  border-color: #ff4d3a;
+  transform: translateY(-2px);
+  background: #161618;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.paper-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  background: #111113;
+  border: 1px solid #27272a;
+  border-radius: 14px;
 }
 
 .workbench-tabs .ant-tabs-nav {
@@ -24,20 +95,4 @@ body,
 
 .workbench-tabs .ant-tabs-content-holder {
   display: none;
-}
-
-.ant-layout {
-  background: #f3efe6;
-}
-
-.ant-menu-light {
-  background: transparent;
-}
-
-.model-card {
-  transition: border-color 0.16s ease, transform 0.16s ease;
-}
-
-.model-card:hover {
-  border-color: #b5442f;
 }

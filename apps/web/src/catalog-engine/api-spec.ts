@@ -32,16 +32,16 @@ export function isReservedKind(kind: ModelKind): boolean {
 
 export function kindNote(kind: ModelKind): string {
   if (kind === "complete") {
-    return "complete 合同已留口（prefix / suffix），本期没有渠道，示例为空对象。";
+    return "complete 接口已预留（prefix / suffix），当前暂未开放。";
   }
   if (kind === "transduce") {
-    return "transduce 合同已留口（转录 / 翻译），本期没有渠道，示例为空对象。";
+    return "transduce 接口已预留（转录 / 翻译），当前暂未开放。";
   }
   if (kind === "score.embed") {
-    return "score.embed 合同已留口，本期没有渠道，示例为空对象。";
+    return "score.embed 接口已预留，当前暂未开放。";
   }
   if (kind === "realtime") {
-    return "realtime 合同已留口，本期没有渠道，示例为空对象。";
+    return "realtime 接口已预留，当前暂未开放。";
   }
   return "";
 }
@@ -323,13 +323,13 @@ export function kindOutputFields(kind: ModelKind): OutputField[] {
   if (kind === "extract") {
     return [{ key: "output.instances", name: "output.instances", type: "ExtractInstance[]", desc: "抽出的实例，可含 label / text / score / box。" }];
   }
-  return [{ key: "output", name: "output", type: "object", desc: "合同已留口，本期无渠道输出。" }];
+  return [{ key: "output", name: "output", type: "object", desc: "该接口暂未开放。" }];
 }
 
 export function commonErrors(): ErrorRow[] {
   return [
     { key: "401", status: "401", code: "unauthorized", when: "没带 Authorization，或 Key 不是网关认的产品密钥。" },
-    { key: "404", status: "404", code: "not_found", when: "路径上的能力未在网关登记，或货架 capability 对不上 seed。" },
+    { key: "404", status: "404", code: "not_found", when: "路径上的能力未登记，或模型与能力 id 不一致。" },
     { key: "502", status: "502", code: "channel_failed / all_channels_failed", when: "主备渠道都失败。检查南向密钥与上游状态，不是改北向路径。" },
     { key: "400", status: "400", code: "bad_request", when: "input 缺必填（如 chat.messages、image/video.prompt、audio.text）。" },
   ];
@@ -437,7 +437,7 @@ export function testEndpoints(model: ModelRecord): TestEndpoint[] {
       },
     ];
   }
-  return [{ id: "reserved", label: "合同留口", input: {}, runnable: false }];
+  return [{ id: "reserved", label: "暂未开放", input: {}, runnable: false }];
 }
 
 export function buildCurl(opts: {

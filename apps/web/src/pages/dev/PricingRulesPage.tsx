@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
-import { UnwiredHint } from "../../components/biz/UnwiredHint.tsx";
+import { ComingSoon } from "../../components/biz/ComingSoon.tsx";
 
 export function PricingRulesPage(): ReactNode {
-  return <UnwiredHint title="计费规则" detail="价格只在货架 yaml 快照里。换算规则未接通。" />;
+  return (
+    <ComingSoon
+      title="计费"
+      description="标价、加价与结算币种将在这里维护。"
+      points={["按能力查看单价", "设置加价", "同步公开价目"]}
+    />
+  );
 }

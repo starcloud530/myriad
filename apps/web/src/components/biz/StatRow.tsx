@@ -1,10 +1,9 @@
-import { Card, Typography } from "antd";
 import type { CSSProperties, ReactNode } from "react";
-import { textSecondary } from "../../tokens/theme.ts";
+import { borderColor, cardShadow, surfaceBg, textPrimary, textSecondary } from "../../tokens/theme.ts";
 
 const grid: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
   gap: 12,
 };
 
@@ -16,15 +15,24 @@ export function StatRow({
   return (
     <div style={grid}>
       {items.map((item) => (
-        <Card key={item.label} size="small">
-          <Typography.Text style={{ color: textSecondary, fontSize: 12 }}>{item.label}</Typography.Text>
-          <div style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.35, marginTop: 6 }}>{item.value}</div>
+        <div
+          key={item.label}
+          style={{
+            padding: "18px 20px",
+            background: surfaceBg,
+            border: `1px solid ${borderColor}`,
+            borderRadius: 14,
+            boxShadow: cardShadow,
+          }}
+        >
+          <div style={{ color: textSecondary, fontSize: 12, letterSpacing: "0.06em" }}>{item.label}</div>
+          <div style={{ fontSize: 26, fontWeight: 680, lineHeight: 1.25, marginTop: 8, color: textPrimary }}>
+            {item.value}
+          </div>
           {item.hint ? (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {item.hint}
-            </Typography.Text>
+            <div style={{ color: textSecondary, fontSize: 12, marginTop: 6 }}>{item.hint}</div>
           ) : null}
-        </Card>
+        </div>
       ))}
     </div>
   );

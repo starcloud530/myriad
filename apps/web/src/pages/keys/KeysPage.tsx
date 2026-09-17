@@ -3,6 +3,7 @@ import { Button, Card, Form, Input, Modal, Space, Table, Tag, Typography, messag
 import type { ColumnsType } from "antd/es/table";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
+import { PageFrame } from "../../components/biz/PageFrame.tsx";
 import { PageHeader } from "../../components/biz/PageHeader.tsx";
 import { StatRow } from "../../components/biz/StatRow.tsx";
 import { forgetSecret } from "../../features/keys/sessionSecrets.ts";
@@ -48,7 +49,7 @@ export function KeysPage(): ReactNode {
       title: "API Key",
       render: (_, row) => <Typography.Text copyable={row.system ? { text: row.prefix } : false}>{displayKey(row)}</Typography.Text>,
     },
-    { title: "业务标签", dataIndex: "tag" },
+    { title: "标签", dataIndex: "tag" },
     { title: "描述", dataIndex: "description", ellipsis: true },
     {
       title: "创建时间",
@@ -113,7 +114,7 @@ export function KeysPage(): ReactNode {
                     await deleteKey(bootstrap, row.id);
                     forgetSecret(row.id);
                     await reload();
-                    void message.success("已删除，网关不再认它");
+                    void message.success("已删除");
                   },
                 });
               }}
@@ -127,10 +128,11 @@ export function KeysPage(): ReactNode {
   ];
 
   return (
-    <div style={{ display: "grid", gap: 20, width: "100%" }}>
+    <PageFrame>
       <PageHeader
-        title="API Keys"
-        description="这里签发的密钥网关当场认。下游只带万象产品密钥，不要把渠道 Key 写进前端。"
+        eyebrow="账户"
+        title="密钥"
+        description="一把密钥调用全部能力。完整密钥只显示一次，请立刻保存。"
         extra={
           <Button
             type="primary"
@@ -146,9 +148,9 @@ export function KeysPage(): ReactNode {
       />
       <StatRow
         items={[
-          { label: "密钥", value: String(keys.length), hint: "含 1 把系统密钥" },
+          { label: "密钥", value: String(keys.length) },
           { label: "启用中", value: String(keys.filter((row) => row.status === "active").length) },
-          { label: "网关", value: error ? "未连上" : "已接通" },
+          { label: "网关", value: error ? "离线" : "在线" },
         ]}
       />
       <Card
@@ -196,11 +198,11 @@ export function KeysPage(): ReactNode {
         }}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 8 }}>
-          <Form.Item name="tag" label="业务标签" rules={[{ required: true, message: "给这把钥匙起个业务名" }]}>
-            <Input placeholder="例如：广场试用、内部评测" maxLength={32} />
+          <Form.Item name="tag" label="标签" rules={[{ required: true, message: "请填写标签" }]}>
+            <Input placeholder="例如：生产、评测" maxLength={32} />
           </Form.Item>
           <Form.Item name="description" label="描述">
-            <Input.TextArea rows={3} placeholder="这把钥匙给谁用、限哪个环境" maxLength={120} />
+            <Input.TextArea rows={3} placeholder="这把密钥给谁用" maxLength={120} />
           </Form.Item>
         </Form>
       </Modal>
@@ -224,7 +226,7 @@ export function KeysPage(): ReactNode {
         }}
       >
         <Form form={editForm} layout="vertical" style={{ marginTop: 8 }}>
-          <Form.Item name="tag" label="业务标签" rules={[{ required: true, message: "标签不能为空" }]}>
+          <Form.Item name="tag" label="标签" rules={[{ required: true, message: "标签不能为空" }]}>
             <Input maxLength={32} />
           </Form.Item>
           <Form.Item name="description" label="描述">
@@ -251,7 +253,7 @@ export function KeysPage(): ReactNode {
         {revealed?.secret ? (
           <div style={{ display: "grid", gap: 12 }}>
             <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-              完整密钥只显示这一次。网关已经认它，广场试用和 curl 可以直接用。
+              完整密钥只显示这一次。之后列表里只会看到前缀。
             </Typography.Paragraph>
             <Typography.Text code copyable>
               {revealed.secret}
@@ -259,6 +261,6 @@ export function KeysPage(): ReactNode {
           </div>
         ) : null}
       </Modal>
-    </div>
+    </PageFrame>
   );
 }

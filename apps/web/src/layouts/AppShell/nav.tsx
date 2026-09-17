@@ -15,7 +15,6 @@ export interface NavLeaf {
   path: string;
   title: string;
   icon: ReactNode;
-  unwired?: boolean;
 }
 
 export interface NavGroup {
@@ -32,21 +31,21 @@ export function isNavGroup(item: NavItem): item is NavGroup {
 }
 
 export const navItems: NavItem[] = [
-  { path: "/home", title: "首页", icon: <HomeOutlined /> },
-  { path: "/keys", title: "API Keys", icon: <ApiOutlined /> },
-  { path: "/playground", title: "模型广场", icon: <ExperimentOutlined /> },
-  { path: "/usage", title: "用量分析", icon: <BarChartOutlined />, unwired: true },
-  { path: "/billing", title: "账单", icon: <PayCircleOutlined />, unwired: true },
+  { path: "/home", title: "模型", icon: <HomeOutlined /> },
+  { path: "/keys", title: "密钥", icon: <ApiOutlined /> },
+  { path: "/playground", title: "试用", icon: <ExperimentOutlined /> },
+  { path: "/usage", title: "用量", icon: <BarChartOutlined /> },
+  { path: "/billing", title: "账单", icon: <PayCircleOutlined /> },
   {
     key: "developer",
-    title: "开发者模式",
+    title: "管理",
     icon: <ControlOutlined />,
     children: [
-      { path: "/dev/channels", title: "渠道管理", icon: <AppstoreOutlined />, unwired: true },
-      { path: "/dev/pricing", title: "计费规则", icon: <SettingOutlined />, unwired: true },
-      { path: "/dev/ops", title: "运维", icon: <ToolOutlined />, unwired: true },
+      { path: "/dev/channels", title: "渠道", icon: <AppstoreOutlined /> },
+      { path: "/dev/pricing", title: "计费", icon: <SettingOutlined /> },
+      { path: "/dev/ops", title: "运维", icon: <ToolOutlined /> },
     ],
   },
 ];
 
-export const docsPath = "/docs/quickstart";
+export const docsPath = "/docs";

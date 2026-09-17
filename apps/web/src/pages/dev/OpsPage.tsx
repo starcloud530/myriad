@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
-import { UnwiredHint } from "../../components/biz/UnwiredHint.tsx";
+import { ComingSoon } from "../../components/biz/ComingSoon.tsx";
 
 export function OpsPage(): ReactNode {
-  return <UnwiredHint title="运维" detail="接入监测还没做。渠道健康会跟货架一起出现，不在这页装空表。" />;
+  return (
+    <ComingSoon
+      title="运维"
+      description="延迟、错误率与上游状态将集中在这一页。"
+      points={["渠道健康", "错误率与延迟", "近期故障"]}
+    />
+  );
 }

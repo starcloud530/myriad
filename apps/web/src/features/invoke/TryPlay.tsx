@@ -120,7 +120,7 @@ function ChatPlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: stri
       <Input.TextArea
         value={draft}
         autoSize={{ minRows: 2, maxRows: 6 }}
-        placeholder="说一句，直接打当前能力的主渠道"
+        placeholder="输入要发送的内容"
         onChange={(event) => {
           setDraft(event.target.value);
         }}

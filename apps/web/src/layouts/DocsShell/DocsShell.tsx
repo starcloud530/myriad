@@ -2,33 +2,73 @@ import { Button, Layout } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import { brandLogoSrc } from "../../lib/publicAsset.ts";
+import { useDocsLocale, useSwitchDocsLocale } from "../../pages/docs/DocsLocale.tsx";
 import { docsNav } from "../../pages/docs/docsNav.ts";
+import { docsHref, type DocsLocale } from "../../pages/docs/locale.ts";
 import { borderColor, layoutBg, surfaceBg, textPrimary, textSecondary } from "../../tokens/theme.ts";
+
 const { Header, Sider, Content } = Layout;
 
 const headerStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 12,
-  height: 52,
-  lineHeight: "52px",
-  padding: "0 20px",
+  height: 60,
+  lineHeight: "60px",
+  padding: "0 22px",
   background: surfaceBg,
   borderBottom: `1px solid ${borderColor}`,
 };
 
+function LangSwitch(): ReactNode {
+  const locale = useDocsLocale();
+  const switchLocale = useSwitchDocsLocale();
+  const option = (id: DocsLocale, label: string): ReactNode => (
+    <button
+      type="button"
+      onClick={() => {
+        switchLocale(id);
+      }}
+      style={{
+        border: "none",
+        background: "none",
+        padding: 0,
+        cursor: "pointer",
+        fontSize: 13,
+        fontWeight: locale === id ? 650 : 400,
+        color: locale === id ? textPrimary : textSecondary,
+      }}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {option("zh", "中文")}
+      <span style={{ color: textSecondary }}>/</span>
+      {option("en", "EN")}
+    </div>
+  );
+}
+
 export function DocsShell(): ReactNode {
   const navigate = useNavigate();
+  const locale = useDocsLocale();
+  const chrome = locale === "zh" ? { console: "控制台", docs: "文档" } : { console: "Console", docs: "Docs" };
 
   return (
     <Layout style={{ height: "100vh", background: layoutBg }}>
       <Header style={headerStyle}>
-        <Link to="/docs/quickstart" style={{ display: "flex", alignItems: "center", gap: 8, color: textPrimary, textDecoration: "none" }}>
+        <Link
+          to={docsHref(locale, "quickstart")}
+          style={{ display: "flex", alignItems: "center", gap: 8, color: textPrimary, textDecoration: "none" }}
+        >
           <img src={brandLogoSrc} alt="" width={22} height={22} />
-          <span style={{ fontWeight: 650, letterSpacing: "0.04em" }}>万象</span>
-          <span style={{ color: textSecondary, fontWeight: 400 }}>Docs</span>
+          <span style={{ fontWeight: 650, letterSpacing: "0.04em" }}>{locale === "zh" ? "万象" : "Myriad"}</span>
+          <span style={{ color: textSecondary, fontWeight: 400 }}>{chrome.docs}</span>
         </Link>
         <div style={{ flex: 1 }} />
+        <LangSwitch />
         <Button type="link" href="https://github.com/starcloud530/myriad" target="_blank" rel="noreferrer">
           GitHub
         </Button>
@@ -38,17 +78,17 @@ export function DocsShell(): ReactNode {
             void navigate("/home");
           }}
         >
-          Console
+          {chrome.console}
         </Button>
       </Header>
       <Layout style={{ flex: 1, minHeight: 0 }}>
         <Sider
           width={220}
-          theme="light"
+          theme="dark"
           style={{ background: surfaceBg, borderRight: `1px solid ${borderColor}`, overflow: "auto" }}
         >
           <nav style={{ padding: "20px 16px", display: "grid", gap: 22 }}>
-            {docsNav.map((group) => (
+            {docsNav(locale).map((group) => (
               <div key={group.title} style={{ display: "grid", gap: 6 }}>
                 <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: textSecondary }}>
                   {group.title}
@@ -63,7 +103,7 @@ export function DocsShell(): ReactNode {
                       textDecoration: "none",
                       fontSize: 14,
                       padding: "5px 10px",
-                      borderLeft: isActive ? "2px solid #b5442f" : "2px solid transparent",
+                      borderLeft: isActive ? "2px solid #ff4d3a" : "2px solid transparent",
                       marginLeft: -2,
                     })}
                   >

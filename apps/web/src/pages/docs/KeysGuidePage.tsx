@@ -2,37 +2,90 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { CodeBlock } from "../../catalog-engine/CodeBlock.tsx";
 import { accentColor } from "../../tokens/theme.ts";
-import { DocsCallout, DocsCode, DocsH1, DocsH2, DocsLead, DocsP, DocsPager, DocsTable } from "./DocsChrome.tsx";
+import {
+  DocsCallout,
+  DocsCode,
+  DocsH1,
+  DocsH2,
+  DocsInlink,
+  DocsLead,
+  DocsP,
+  DocsPager,
+  DocsTable,
+} from "./DocsChrome.tsx";
+import { useDocsLocale } from "./DocsLocale.tsx";
 
 export function KeysGuidePage(): ReactNode {
+  const zh = useDocsLocale() === "zh";
+
   return (
     <>
-      <DocsH1>API keys</DocsH1>
+      <DocsH1>{zh ? "密钥" : "API keys"}</DocsH1>
       <DocsLead>
-        北向是产品密钥：<DocsCode>Authorization: Bearer &lt;MYRIAD_KEY&gt;</DocsCode>
-        。南向是厂商 Secret。两套东西，不要混。签发值形如 <DocsCode>sk-myriad-…</DocsCode>
-        ，明文只在创建或重置时出现一次。
+        {zh ? (
+          <>
+            北向是产品密钥：<DocsCode>Authorization: Bearer &lt;MYRIAD_KEY&gt;</DocsCode>
+            。南向是厂商 Secret。两套东西，不要混。签发值形如 <DocsCode>sk-myriad-…</DocsCode>
+            ，明文只在创建或重置时出现一次。
+          </>
+        ) : (
+          <>
+            Northbound uses a product key: <DocsCode>Authorization: Bearer &lt;MYRIAD_KEY&gt;</DocsCode>
+            . Southbound uses vendor secrets. Do not mix them. Issued values look like{" "}
+            <DocsCode>sk-myriad-…</DocsCode>. Plaintext appears once, on create or rotate.
+          </>
+        )}
       </DocsLead>
 
       <DocsTable
-        headers={["", "产品密钥", "南向 Secret"]}
+        headers={["", zh ? "产品密钥" : "Product key", zh ? "南向 Secret" : "Southbound secret"]}
         rows={[
-          ["谁用", "你的客户端 → 万象", "万象 Worker → 厂商"],
-          ["哪来", "控制台 Keys", "Worker Secrets（.dev.vars，不进 git）"],
-          ["怎么存", "哈希进 MYRIAD_KEYS KV", "仅 Worker 可见"],
-          ["请求里", "Authorization: Bearer …", "客户端永远不带"],
+          [
+            zh ? "谁用" : "Who",
+            zh ? "你的客户端 → 万象" : "Your client → Myriad",
+            zh ? "万象 Worker → 厂商" : "Myriad Worker → vendor",
+          ],
+          [
+            zh ? "哪来" : "Where from",
+            zh ? "控制台 Keys" : "Console → Keys",
+            zh ? "Worker Secrets（.dev.vars，不进 git）" : "Worker Secrets (.dev.vars, never git)",
+          ],
+          [
+            zh ? "怎么存" : "Stored as",
+            zh ? "哈希进 MYRIAD_KEYS KV" : "Hash in MYRIAD_KEYS KV",
+            zh ? "仅 Worker 可见" : "Visible only to the Worker",
+          ],
+          [
+            zh ? "请求里" : "On the wire",
+            "Authorization: Bearer …",
+            zh ? "客户端永远不带" : "Never sent by the client",
+          ],
         ]}
       />
 
-      <DocsH2>签发</DocsH2>
+      <DocsH2>{zh ? "签发" : "Issue"}</DocsH2>
       <DocsP>
-        打开{" "}
-        <Link to="/keys" style={{ color: accentColor }}>
-          Console → API Keys
-        </Link>
-        。创建时要 <DocsCode>tag</DocsCode>。把返回里的 <DocsCode>secret</DocsCode>{" "}
-        立刻存进环境变量。之后列表只有 <DocsCode>prefix</DocsCode> / <DocsCode>last4</DocsCode> /{" "}
-        <DocsCode>status</DocsCode>。
+        {zh ? (
+          <>
+            打开{" "}
+            <Link to="/keys" style={{ color: accentColor }}>
+              控制台 → API Keys
+            </Link>
+            。创建时要 <DocsCode>tag</DocsCode>。把返回里的 <DocsCode>secret</DocsCode>{" "}
+            立刻存进环境变量。之后列表只有 <DocsCode>prefix</DocsCode> / <DocsCode>last4</DocsCode> /{" "}
+            <DocsCode>status</DocsCode>。
+          </>
+        ) : (
+          <>
+            Open{" "}
+            <Link to="/keys" style={{ color: accentColor }}>
+              Console → API Keys
+            </Link>
+            . Create requires a <DocsCode>tag</DocsCode>. Store <DocsCode>secret</DocsCode> from the
+            response immediately. Later lists only show <DocsCode>prefix</DocsCode> /{" "}
+            <DocsCode>last4</DocsCode> / <DocsCode>status</DocsCode>.
+          </>
+        )}
       </DocsP>
       <CodeBlock
         tabs={[
@@ -49,37 +102,54 @@ export function KeysGuidePage(): ReactNode {
             value: "sdk",
             code: `const key = await myriad.createKey({ tag: "ci" });
 console.log(key.secret);
-// secret 只在这一次响应里`,
+// secret ${zh ? "只在这一次响应里" : "only appears in this response"}`,
           },
         ]}
       />
 
-      <DocsH2>管理</DocsH2>
+      <DocsH2>{zh ? "管理" : "Manage"}</DocsH2>
       <DocsTable
-        headers={["动作", "路径"]}
+        headers={zh ? ["动作", "路径"] : ["Action", "Path"]}
         rows={[
-          ["列表（无明文）", <DocsCode key="l">GET /v1/keys</DocsCode>],
-          ["创建", <DocsCode key="c">POST /v1/keys</DocsCode>],
-          ["改标签 / 停用", <DocsCode key="p">PATCH /v1/keys/:id</DocsCode>],
-          ["重置明文", <DocsCode key="r">POST /v1/keys/:id/rotate</DocsCode>],
-          ["删除", <DocsCode key="d">DELETE /v1/keys/:id</DocsCode>],
+          [zh ? "列表（无明文）" : "List (no plaintext)", <DocsCode key="l">GET /v1/keys</DocsCode>],
+          [zh ? "创建" : "Create", <DocsCode key="c">POST /v1/keys</DocsCode>],
+          [zh ? "改标签 / 停用" : "Retag / disable", <DocsCode key="p">PATCH /v1/keys/:id</DocsCode>],
+          [zh ? "重置明文" : "Rotate", <DocsCode key="r">POST /v1/keys/:id/rotate</DocsCode>],
+          [zh ? "删除" : "Delete", <DocsCode key="d">DELETE /v1/keys/:id</DocsCode>],
         ]}
       />
       <DocsP>
-        没带、假密钥、或已 <DocsCode>disabled</DocsCode>，一律{" "}
-        <DocsCode>401 unauthorized</DocsCode>。系统种子 <DocsCode>dev-key</DocsCode>{" "}
-        不能改、不能轮换、不能删（<DocsCode>403 forbidden</DocsCode>）。没绑{" "}
-        <DocsCode>MYRIAD_KEYS</DocsCode> 时走进程内存储，重启会丢。
+        {zh ? (
+          <>
+            没带、假密钥、或已 <DocsCode>disabled</DocsCode>，一律{" "}
+            <DocsCode>401 unauthorized</DocsCode>。系统种子 <DocsCode>dev-key</DocsCode>{" "}
+            不能改、不能轮换、不能删（<DocsCode>403 forbidden</DocsCode>）。没绑{" "}
+            <DocsCode>MYRIAD_KEYS</DocsCode> 时走进程内存储，重启会丢。
+          </>
+        ) : (
+          <>
+            Missing, fake, or <DocsCode>disabled</DocsCode> keys all return{" "}
+            <DocsCode>401 unauthorized</DocsCode>. The seed <DocsCode>dev-key</DocsCode> cannot be
+            changed, rotated, or deleted (<DocsCode>403 forbidden</DocsCode>). Without{" "}
+            <DocsCode>MYRIAD_KEYS</DocsCode> the store is in-process and dies on restart.
+          </>
+        )}
       </DocsP>
 
-      <DocsCallout title="502 不是换 Key">
-        南向挂了查 <DocsCode>.dev.vars</DocsCode>，不是再签一把产品密钥。见{" "}
-        <Link to="/docs/errors" style={{ color: accentColor }}>
-          Errors
-        </Link>
-        。
+      <DocsCallout title={zh ? "502 不是换 Key" : "502 is not a new key"}>
+        {zh ? (
+          <>
+            南向挂了查 <DocsCode>.dev.vars</DocsCode>，不是再签一把产品密钥。见{" "}
+            <DocsInlink slug="errors">错误码</DocsInlink>。
+          </>
+        ) : (
+          <>
+            If the southbound side is down, check <DocsCode>.dev.vars</DocsCode>. Do not mint another
+            product key. See <DocsInlink slug="errors">Errors</DocsInlink>.
+          </>
+        )}
       </DocsCallout>
-      <DocsPager current="/docs/keys" />
+      <DocsPager current="keys" />
     </>
   );
 }

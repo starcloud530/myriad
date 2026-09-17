@@ -22,7 +22,7 @@ export function VendorMark({
           width: size,
           height: size,
           borderRadius: Math.max(6, Math.round(size / 5)),
-          background: "#F5F7FB",
+          background: "#1a1a1f",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",

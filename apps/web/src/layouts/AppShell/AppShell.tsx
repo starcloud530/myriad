@@ -1,10 +1,10 @@
-import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Layout, Tag } from "antd";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import { Button, Layout } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { brandLogoSrc } from "../../lib/publicAsset.ts";
-import { borderColor, layoutBg, surfaceBg, textPrimary } from "../../tokens/theme.ts";
+import { borderColor, layoutBg, surfaceBg, textPrimary, textSecondary } from "../../tokens/theme.ts";
 import { SidebarNav } from "./SidebarNav.tsx";
 import { docsPath } from "./nav.tsx";
 
@@ -14,9 +14,9 @@ const headerStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 12,
-  height: 48,
-  lineHeight: "48px",
-  padding: "0 16px",
+  height: 60,
+  lineHeight: "60px",
+  padding: "0 22px",
   overflow: "visible",
   background: surfaceBg,
   borderBottom: `1px solid ${borderColor}`,
@@ -38,21 +38,17 @@ function HeaderBar({
         icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         onClick={onToggle}
       />
-      <img src={brandLogoSrc} alt="" width={22} height={22} style={{ display: "block" }} />
-      <span style={{ fontWeight: 650, color: textPrimary, whiteSpace: "nowrap", letterSpacing: "0.04em" }}>万象</span>
+      <img src={brandLogoSrc} alt="" width={26} height={26} style={{ display: "block" }} />
+      <span style={{ fontWeight: 680, color: textPrimary, letterSpacing: "0.06em", fontSize: 16 }}>万象</span>
+      <span style={{ color: textSecondary, fontSize: 13 }}>控制台</span>
       <div style={{ flex: 1 }} />
-      <Tag bordered={false}>开发环境</Tag>
       <Button
-        type="link"
         onClick={() => {
           void navigate(docsPath);
         }}
       >
         文档
       </Button>
-      <Dropdown menu={{ items: [{ key: "env", label: "本地 Worker", disabled: true }] }}>
-        <Button type="text" icon={<UserOutlined />} />
-      </Dropdown>
     </Header>
   );
 }
@@ -69,12 +65,12 @@ export function AppShell(): ReactNode {
       <HeaderBar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <Layout style={{ flex: 1, minHeight: 0 }}>
         <Sider
-          theme="light"
+          theme="dark"
           collapsible
           collapsed={collapsed}
           trigger={null}
-          width={200}
-          collapsedWidth={64}
+          width={220}
+          collapsedWidth={68}
           style={{ background: surfaceBg, borderRight: `1px solid ${borderColor}` }}
         >
           <SidebarNav collapsed={collapsed} />
@@ -87,7 +83,7 @@ export function AppShell(): ReactNode {
             background: layoutBg,
           }}
         >
-          <div style={{ flex: 1, overflow: "auto", padding: "16px 20px 28px" }}>
+          <div style={{ flex: 1, overflow: "auto", padding: "32px 36px 64px" }}>
             <Outlet />
           </div>
         </Content>

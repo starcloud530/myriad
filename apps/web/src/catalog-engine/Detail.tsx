@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { ErrorHint } from "../components/biz/ErrorHint.tsx";
+import { PageFrame } from "../components/biz/PageFrame.tsx";
 import { TryPlay } from "../features/invoke/TryPlay.tsx";
 import { TokenPicker } from "../features/keys/TokenPicker.tsx";
 import { useProductKeys } from "../features/keys/useProductKeys.ts";
@@ -98,15 +99,13 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
   const context = contextLabel(model);
 
   return (
-    <div style={{ display: "grid", gap: 16, width: "100%" }}>
-      <Breadcrumb
-        items={[{ title: <Link to="/playground">模型广场</Link> }, { title: model.name }]}
-      />
-      <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-        <VendorMark vendor={model.vendor} size={48} />
+    <PageFrame>
+      <Breadcrumb items={[{ title: <Link to="/playground">试用</Link> }, { title: model.name }]} />
+      <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
+        <VendorMark vendor={model.vendor} size={56} />
         <div style={{ minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-            <Typography.Title level={3} style={{ margin: 0 }}>
+            <Typography.Title level={2} style={{ margin: 0, fontSize: 30, fontWeight: 680, letterSpacing: "-0.03em" }}>
               {model.name}
             </Typography.Title>
             <Tag color={health.status === "live" ? "success" : "error"}>{health.label}</Tag>
@@ -115,7 +114,7 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
             {meta.name} · {model.vendor_model}
             {health.channels ? ` · ${health.channels}` : ""}
           </Typography.Text>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
             <Tag>{modalityLabel[model.modality]}</Tag>
             <Tag>{modeLabel[model.mode]}</Tag>
             <Tag>{priceSummary(model.pricing)}</Tag>
@@ -142,7 +141,7 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
                   {loading ? null : capability ? (
                     <TryPlay apiKey={apiKey} model={model} />
                   ) : (
-                    <ErrorHint message={error || "网关尚未登记该能力，无法试用。"} />
+                    <ErrorHint message={error || "该模型暂时无法试用。"} />
                   )}
                 </div>
               </Card>
@@ -163,14 +162,14 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
             children: (
               <Card>
                 <Typography.Paragraph style={{ marginTop: 0, whiteSpace: "pre-wrap" }}>
-                  {model.description || "目录尚未写入介绍。"}
+                  {model.description || "暂无介绍。"}
                 </Typography.Paragraph>
                 <Descriptions column={1} size="small">
                   <Descriptions.Item label="厂商">{meta.name}</Descriptions.Item>
-                  <Descriptions.Item label="型号">{model.id}</Descriptions.Item>
-                  <Descriptions.Item label="上游 id">{model.vendor_model}</Descriptions.Item>
+                  <Descriptions.Item label="ID">{model.id}</Descriptions.Item>
+                  <Descriptions.Item label="上游">{model.vendor_model}</Descriptions.Item>
                   <Descriptions.Item label="协议">{model.kind}</Descriptions.Item>
-                  <Descriptions.Item label="调用能力">{model.capability}</Descriptions.Item>
+                  <Descriptions.Item label="能力">{model.capability}</Descriptions.Item>
                   {model.specs?.context_length != null ? (
                     <Descriptions.Item label="上下文">{model.specs.context_length.toLocaleString()}</Descriptions.Item>
                   ) : null}
@@ -191,8 +190,8 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
             children: (
               <Card>
                 <Typography.Paragraph type="secondary">
-                  货架快照，{model.pricing.source === "estimate" ? "估价" : "以官方刊例为准"}
-                  {model.pricing.as_of ? ` · ${model.pricing.as_of}` : ""}。不是每次请求写库。
+                  {model.pricing.source === "estimate" ? "估价" : "公开刊例"}
+                  {model.pricing.as_of ? ` · ${model.pricing.as_of}` : ""}
                 </Typography.Paragraph>
                 <Table
                   rowKey="key"
@@ -209,6 +208,6 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
           },
         ]}
       />
-    </div>
+    </PageFrame>
   );
 }

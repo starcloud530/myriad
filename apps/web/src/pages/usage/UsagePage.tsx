@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { UnwiredHint } from "../../components/biz/UnwiredHint.tsx";
+import { ComingSoon } from "../../components/biz/ComingSoon.tsx";
 
 export function UsagePage(): ReactNode {
   return (
-    <UnwiredHint
-      title="用量分析"
-      detail="账本还没接通。数字全 0 是演戏，所以这一页先标未接通，不装已经在计量。"
+    <ComingSoon
+      title="用量"
+      description="请求次数、费用与延迟会按密钥和能力汇总，方便对账与排障。"
+      points={["按密钥、能力、时间范围筛选", "导出调用明细", "异常调用告警"]}
     />
   );
 }

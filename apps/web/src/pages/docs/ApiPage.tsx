@@ -2,90 +2,129 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { CodeBlock } from "../../catalog-engine/CodeBlock.tsx";
 import { accentColor } from "../../tokens/theme.ts";
-import { DocsCallout, DocsCode, DocsH1, DocsH2, DocsLead, DocsP, DocsPager, DocsTable } from "./DocsChrome.tsx";
+import {
+  DocsCallout,
+  DocsCode,
+  DocsH1,
+  DocsH2,
+  DocsInlink,
+  DocsLead,
+  DocsP,
+  DocsPager,
+  DocsTable,
+} from "./DocsChrome.tsx";
+import { useDocsLocale } from "./DocsLocale.tsx";
 
-const curl = `curl -sS http://127.0.0.1:8791/v1/capabilities/chat \\
+export function ApiPage(): ReactNode {
+  const zh = useDocsLocale() === "zh";
+  const hello = zh ? "用一句话介绍万象" : "Introduce Myriad in one sentence.";
+  const prompt = zh ? "一辆停在湿沥青上的红色自行车" : "A red bicycle on wet asphalt";
+
+  return (
+    <>
+      <DocsH1>API</DocsH1>
+      <DocsLead>
+        {zh ? (
+          <>
+            写入路径永远是 <DocsCode>POST /v1/capabilities/:id</DocsCode>。<DocsCode>id</DocsCode>{" "}
+            是能力，不是厂商模型名。
+          </>
+        ) : (
+          <>
+            The write path is always <DocsCode>POST /v1/capabilities/:id</DocsCode>.{" "}
+            <DocsCode>id</DocsCode> is a capability, not a vendor model name.
+          </>
+        )}
+      </DocsLead>
+
+      <DocsH2>{zh ? "基址与鉴权" : "Base URL and auth"}</DocsH2>
+      <DocsTable
+        headers={["", ""]}
+        rows={[
+          [zh ? "网关" : "Gateway", <DocsCode key="g">http://127.0.0.1:8791</DocsCode>],
+          [
+            zh ? "控制台" : "Console",
+            <Link key="c" to="/home" style={{ color: accentColor }}>
+              http://127.0.0.1:18081
+            </Link>,
+          ],
+          [zh ? "鉴权" : "Auth", <DocsCode key="a">Authorization: Bearer $MYRIAD_KEY</DocsCode>],
+        ]}
+      />
+
+      <DocsH2>{zh ? "请求" : "Request"}</DocsH2>
+      <DocsTable
+        headers={zh ? ["字段", "位置", "说明"] : ["Field", "Where", "Meaning"]}
+        rows={[
+          [
+            <DocsCode key="id">:id</DocsCode>,
+            "path",
+            zh ? "能力 id，例如 chat、image.generate。" : "Capability id, e.g. chat, image.generate.",
+          ],
+          [
+            <DocsCode key="auth">Authorization</DocsCode>,
+            "header",
+            zh ? "Bearer 产品密钥。必填。" : "Bearer product key. Required.",
+          ],
+          [<DocsCode key="ct">Content-Type</DocsCode>, "header", "application/json."],
+          [
+            <DocsCode key="rid">x-request-id</DocsCode>,
+            "header",
+            zh ? "自带则回显；不带由网关生成。" : "Echoed if sent; otherwise the gateway mints one.",
+          ],
+          [
+            <DocsCode key="input">input</DocsCode>,
+            "body",
+            zh ? "该能力的入参，包在这一层。" : "Capability input. Wrap it in this field.",
+          ],
+          [
+            <DocsCode key="ch">channel</DocsCode>,
+            "body",
+            zh ? "仅调试。生产路由不认客户端指定的渠道。" : "Debug only. Production routing ignores a client-picked channel.",
+          ],
+        ]}
+      />
+      <DocsP>
+        {zh ? (
+          <>
+            没有 <DocsCode>input</DocsCode> 键时，整段 body 当 input。对外仍按包一层写。
+          </>
+        ) : (
+          <>
+            If there is no <DocsCode>input</DocsCode> key, the whole body is treated as input. Still
+            write the wrapped form in public clients.
+          </>
+        )}
+      </DocsP>
+      <CodeBlock
+        tabs={[
+          {
+            label: "curl",
+            value: "curl",
+            code: `curl -sS http://127.0.0.1:8791/v1/capabilities/chat \\
   -H "Authorization: Bearer $MYRIAD_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{"input":{"messages":[{"role":"user","content":"用一句话介绍万象"}]}}'`;
-
-const fetchCode = `const res = await fetch("http://127.0.0.1:8791/v1/capabilities/chat", {
+  -d '{"input":{"messages":[{"role":"user","content":"${hello}"}]}}'`,
+          },
+          {
+            label: "fetch",
+            value: "fetch",
+            code: `const res = await fetch("http://127.0.0.1:8791/v1/capabilities/chat", {
   method: "POST",
   headers: {
     Authorization: \`Bearer \${process.env.MYRIAD_KEY}\`,
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    input: { messages: [{ role: "user", content: "用一句话介绍万象" }] },
+    input: { messages: [{ role: "user", content: "${hello}" }] },
   }),
 });
-const body = await res.json();`;
-
-const curlImage = `curl -sS http://127.0.0.1:8791/v1/capabilities/image.generate \\
-  -H "Authorization: Bearer $MYRIAD_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "input": {
-      "prompt": "一辆停在湿沥青上的红色自行车",
-      "refs": [{ "kind": "image", "uri": "https://example.com/ref.png" }]
-    }
-  }'`;
-
-export function ApiPage(): ReactNode {
-  return (
-    <>
-      <DocsH1>API</DocsH1>
-      <DocsLead>
-        写入路径永远是 <DocsCode>POST /v1/capabilities/:id</DocsCode>。<DocsCode>id</DocsCode>{" "}
-        是能力，不是厂商模型名。
-      </DocsLead>
-
-      <DocsH2>基址与鉴权</DocsH2>
-      <DocsTable
-        headers={["", ""]}
-        rows={[
-          ["网关", <DocsCode key="g">http://127.0.0.1:8791</DocsCode>],
-          [
-            "控制台",
-            <Link key="c" to="/home" style={{ color: accentColor }}>
-              http://127.0.0.1:18081
-            </Link>,
-          ],
-          ["鉴权", <DocsCode key="a">Authorization: Bearer $MYRIAD_KEY</DocsCode>],
+const body = await res.json();`,
+          },
         ]}
       />
 
-      <DocsH2>请求</DocsH2>
-      <DocsTable
-        headers={["字段", "位置", "说明"]}
-        rows={[
-          [<DocsCode key="id">:id</DocsCode>, "path", "能力 id，例如 chat、image.generate。"],
-          [<DocsCode key="auth">Authorization</DocsCode>, "header", "Bearer 产品密钥。必填。"],
-          [<DocsCode key="ct">Content-Type</DocsCode>, "header", "application/json。"],
-          [
-            <DocsCode key="rid">x-request-id</DocsCode>,
-            "header",
-            "自带则回显；不带由网关生成。",
-          ],
-          [<DocsCode key="input">input</DocsCode>, "body", "该能力的入参。合同写法是包这一层。"],
-          [
-            <DocsCode key="ch">channel</DocsCode>,
-            "body",
-            "仅调试。生产路由不认客户端指定的渠道。",
-          ],
-        ]}
-      />
-      <DocsP>
-        没有 <DocsCode>input</DocsCode> 键时，整段 body 当 input。对外仍按包一层写。
-      </DocsP>
-      <CodeBlock
-        tabs={[
-          { label: "curl", value: "curl", code: curl },
-          { label: "fetch", value: "fetch", code: fetchCode },
-        ]}
-      />
-
-      <DocsH2>响应</DocsH2>
+      <DocsH2>{zh ? "响应" : "Response"}</DocsH2>
       <CodeBlock
         code={`{
   "request_id": "…",
@@ -97,82 +136,135 @@ export function ApiPage(): ReactNode {
 }`}
       />
       <DocsP>
-        <DocsCode>channel</DocsCode> 是实际出站。<DocsCode>usage.unit</DocsCode> 为{" "}
-        <DocsCode>token</DocsCode> / <DocsCode>image</DocsCode> / <DocsCode>audio_second</DocsCode> /{" "}
-        <DocsCode>video_second</DocsCode> / <DocsCode>request</DocsCode>。响应头里也有{" "}
-        <DocsCode>x-request-id</DocsCode>。
+        {zh ? (
+          <>
+            <DocsCode>channel</DocsCode> 是实际出站。<DocsCode>usage.unit</DocsCode> 为{" "}
+            <DocsCode>token</DocsCode> / <DocsCode>image</DocsCode> / <DocsCode>audio_second</DocsCode> /{" "}
+            <DocsCode>video_second</DocsCode> / <DocsCode>request</DocsCode>。响应头里也有{" "}
+            <DocsCode>x-request-id</DocsCode>。
+          </>
+        ) : (
+          <>
+            <DocsCode>channel</DocsCode> is the outbound channel. <DocsCode>usage.unit</DocsCode> is{" "}
+            <DocsCode>token</DocsCode> / <DocsCode>image</DocsCode> / <DocsCode>audio_second</DocsCode> /{" "}
+            <DocsCode>video_second</DocsCode> / <DocsCode>request</DocsCode>. The response also
+            carries <DocsCode>x-request-id</DocsCode>.
+          </>
+        )}
       </DocsP>
 
-      <DocsH2>已接通的能力</DocsH2>
+      <DocsH2>{zh ? "已接通的能力" : "Live capabilities"}</DocsH2>
       <DocsTable
         headers={[":id", "input", "output"]}
         rows={[
           [
             <DocsCode key="c">chat</DocsCode>,
-            "messages 必填；tools、stream 可选",
+            zh ? "messages 必填；tools、stream 可选" : "messages required; tools, stream optional",
             "message",
           ],
           [
             <DocsCode key="i">image.generate</DocsCode>,
-            "prompt 必填；refs 最多 16 张，有则图生图",
+            zh ? "prompt 必填；refs 最多 16 张，有则图生图" : "prompt required; refs (max 16) switches to edit",
             "images[]",
           ],
           [
             <DocsCode key="v">video.generate</DocsCode>,
-            "prompt 必填；refs、duration_s 可选",
-            "job_id + status（先回 queued）",
+            zh ? "prompt 必填；refs、duration_s 可选" : "prompt required; refs, duration_s optional",
+            zh ? "job_id + status（先回 queued）" : "job_id + status (starts queued)",
           ],
-          [<DocsCode key="a">audio.speech</DocsCode>, "text 必填；voice 可选", "audio"],
+          [
+            <DocsCode key="a">audio.speech</DocsCode>,
+            zh ? "text 必填；voice 可选" : "text required; voice optional",
+            "audio",
+          ],
           [
             <DocsCode key="n">image-nsfw</DocsCode>,
-            "input（文本或 { kind, uri }）；labels 可选",
+            zh ? "input（文本或 { kind, uri }）；labels 可选" : "input (text or { kind, uri }); labels optional",
             "labels[{ label, score }]",
           ],
-          [<DocsCode key="p">portrait-quality</DocsCode>, "input（文本或介质）", "value"],
+          [
+            <DocsCode key="p">portrait-quality</DocsCode>,
+            zh ? "input（文本或介质）" : "input (text or media)",
+            "value",
+          ],
           [
             <DocsCode key="k">calorie-recognize</DocsCode>,
             <>
-              source + task（卡路里用 <DocsCode>detect</DocsCode>）
+              source + task{zh ? "（卡路里用 " : " (calories use "}
+              <DocsCode>detect</DocsCode>
+              {zh ? "）" : ")"}
             </>,
             "instances[]",
           ],
         ]}
       />
-      <CodeBlock code={curlImage} />
+      <CodeBlock
+        code={`curl -sS http://127.0.0.1:8791/v1/capabilities/image.generate \\
+  -H "Authorization: Bearer $MYRIAD_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "input": {
+      "prompt": "${prompt}",
+      "refs": [{ "kind": "image", "uri": "https://example.com/ref.png" }]
+    }
+  }'`}
+      />
 
-      <DocsH2>只读接口</DocsH2>
+      <DocsH2>{zh ? "只读接口" : "Read-only"}</DocsH2>
       <DocsTable
-        headers={["方法", "路径", "说明"]}
+        headers={zh ? ["方法", "路径", "说明"] : ["Method", "Path", "Notes"]}
         rows={[
-          ["GET", <DocsCode key="h">/health</DocsCode>, "探活。不鉴权。"],
-          ["GET", <DocsCode key="lc">/v1/capabilities</DocsCode>, "当前产品能打的能力。要 Bearer。"],
-          ["GET", <DocsCode key="gc">/v1/capabilities/:id</DocsCode>, "单条能力。要 Bearer。"],
+          ["GET", <DocsCode key="h">/health</DocsCode>, zh ? "探活。不鉴权。" : "Liveness. No auth."],
+          [
+            "GET",
+            <DocsCode key="lc">/v1/capabilities</DocsCode>,
+            zh ? "当前产品能打的能力。要 Bearer。" : "Capabilities for this product. Bearer required.",
+          ],
+          [
+            "GET",
+            <DocsCode key="gc">/v1/capabilities/:id</DocsCode>,
+            zh ? "单条能力。要 Bearer。" : "One capability. Bearer required.",
+          ],
         ]}
       />
 
-      <DocsCallout title="流式与异步">
-        <DocsCode>chat</DocsCode> 可带 <DocsCode>input.stream</DocsCode>
-        。当前网关仍回一条 JSON，不是 SSE。<DocsCode>video.generate</DocsCode> 是 job，先回{" "}
-        <DocsCode>{`{ job_id, status: "queued" }`}</DocsCode>，不要当同步成片。
+      <DocsCallout title={zh ? "流式与异步" : "Streaming and jobs"}>
+        {zh ? (
+          <>
+            <DocsCode>chat</DocsCode> 可带 <DocsCode>input.stream</DocsCode>
+            。当前网关仍回一条 JSON，不是 SSE。<DocsCode>video.generate</DocsCode> 是 job，先回{" "}
+            <DocsCode>{`{ job_id, status: "queued" }`}</DocsCode>，不要当同步成片。
+          </>
+        ) : (
+          <>
+            <DocsCode>chat</DocsCode> accepts <DocsCode>input.stream</DocsCode>. The gateway still
+            returns one JSON body, not SSE. <DocsCode>video.generate</DocsCode> is a job: first
+            response is <DocsCode>{`{ job_id, status: "queued" }`}</DocsCode>, not a finished clip.
+          </>
+        )}
       </DocsCallout>
 
-      <DocsCallout title="不要找这些路径">
-        <DocsCode>/v1/models</DocsCode>、<DocsCode>/v1/chat/completions</DocsCode>{" "}
-        不在万象北向。打过去是 404。
+      <DocsCallout title={zh ? "不要找这些路径" : "These paths are not here"}>
+        <DocsCode>/v1/models</DocsCode>
+        {zh ? "、" : " and "}
+        <DocsCode>/v1/chat/completions</DocsCode>
+        {zh ? " 不在万象北向。打过去是 404。" : " are not on the northbound API. They 404."}
       </DocsCallout>
 
       <DocsP>
-        错误形状见{" "}
-        <Link to="/docs/errors" style={{ color: accentColor }}>
-          Errors
-        </Link>
-        。密钥见{" "}
-        <Link to="/docs/keys" style={{ color: accentColor }}>
-          API keys
-        </Link>
-        。
+        {zh ? (
+          <>
+            错误形状见 <DocsInlink slug="errors">错误码</DocsInlink>。密钥见{" "}
+            <DocsInlink slug="keys">密钥</DocsInlink>。
+          </>
+        ) : (
+          <>
+            Error shapes: <DocsInlink slug="errors">Errors</DocsInlink>. Keys:{" "}
+            <DocsInlink slug="keys">API keys</DocsInlink>.
+          </>
+        )}
       </DocsP>
-      <DocsPager current="/docs/api" />
+      <DocsPager current="api" />
     </>
   );
 }

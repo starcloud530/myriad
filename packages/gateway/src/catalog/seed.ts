@@ -39,7 +39,7 @@ export function defaultSeed(): CatalogSeed {
         billing: { unit: "token" },
         enabled: true,
         description:
-          "通用文本对话。主渠道 DeepSeek Chat，限流或失败时落到通义千问 Plus。下游只打万象 chat，不直连厂商。",
+          "通用文本对话。优先 DeepSeek，失败时回落到通义千问。一次调用，网关选择渠道。",
         channels: [
           channel("deepseek", AdapterKinds.openaiCompat, "primary", {
             base_url: "https://api.deepseek.com",
@@ -61,8 +61,7 @@ export function defaultSeed(): CatalogSeed {
         mode: "sync",
         billing: { unit: "image" },
         enabled: true,
-        description:
-          "文生图；传入 refs[] 时走 gpt-image-2/edit，最多 16 张参考图。渠道是 fal，不暴露厂商 Key。",
+        description: "文生图。传入参考图时走编辑接口，最多 16 张。",
         channels: [
           channel("fal-image", AdapterKinds.fal, "primary", {
             vendor_model: "fal-ai/gpt-image-2",
@@ -79,8 +78,7 @@ export function defaultSeed(): CatalogSeed {
         mode: "async",
         billing: { unit: "video_second" },
         enabled: true,
-        description:
-          "异步生视频。主渠道火山 Seedance（需方舟接入点 ID），失败落到 fal MiniMax。调用只验提交 job。",
+        description: "异步视频生成。优先火山 Seedance，失败回落到 MiniMax。",
         channels: [
           channel("volcengine-seedance", AdapterKinds.volcengine, "primary", {
             base_url: "https://ark.cn-beijing.volces.com/api/v3",
@@ -101,7 +99,7 @@ export function defaultSeed(): CatalogSeed {
         mode: "sync",
         billing: { unit: "audio_second" },
         enabled: true,
-        description: "文本转语音。第一期走 fal MiniMax Speech，音色目录以后再登记。",
+        description: "文本转语音，当前接入 MiniMax Speech。",
         channels: [
           channel("fal-speech", AdapterKinds.fal, "primary", {
             vendor_model: "fal-ai/minimax/speech-2.8-turbo",
@@ -117,7 +115,7 @@ export function defaultSeed(): CatalogSeed {
         mode: "sync",
         billing: { unit: "image" },
         enabled: true,
-        description: "万象自建能力。图像敏感内容检测，第一期先走本平台接线，随后替换为自有模型服务。",
+        description: "图像敏感内容检测。",
         channels: [myriadChannel("myriad-nsfw", "myriad-nsfw")],
       },
       {
@@ -128,7 +126,7 @@ export function defaultSeed(): CatalogSeed {
         mode: "sync",
         billing: { unit: "image" },
         enabled: true,
-        description: "万象自建能力。人像质量打分，第一期先走本平台接线，随后替换为自有模型服务。",
+        description: "人像质量打分。",
         channels: [myriadChannel("myriad-portrait-quality", "myriad-portrait-quality")],
       },
       {
@@ -139,7 +137,7 @@ export function defaultSeed(): CatalogSeed {
         mode: "sync",
         billing: { unit: "image" },
         enabled: true,
-        description: "万象自建能力。卡路里识别，厂商是万象，不是第三方渠道。第一期先走本平台接线。",
+        description: "从图像识别食物并估算卡路里。",
         channels: [myriadChannel("myriad-calorie", "myriad-calorie")],
       },
     ],

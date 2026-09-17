@@ -2,5 +2,11 @@ import type { ReactNode } from "react";
 import { ModelShelf } from "../../catalog-engine/index.ts";
 
 export function PlaygroundPage(): ReactNode {
-  return <ModelShelf title="模型广场" intro="价格、单位、同步/异步、上下文和渠道健康都在卡上。试用打的是北向能力。" />;
+  return (
+    <ModelShelf
+      eyebrow="试用"
+      title="在线试跑"
+      intro="选一个模型，用你的密钥立刻调用。价格与可用性写在卡片上。"
+    />
+  );
 }

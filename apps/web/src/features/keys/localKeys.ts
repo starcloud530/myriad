@@ -84,8 +84,8 @@ export function deleteLocalKey(id: string): void {
 
 export const systemDevKey: LocalKey = {
   id: "dev-key",
-  tag: "开发态",
-  description: "网关当前认的产品密钥，试用广场和 CLI 都用它。",
+  tag: "系统",
+  description: "控制台与本地调用使用的系统密钥。",
   secret: "dev-key",
   createdAt: "2026-09-01T00:00:00.000Z",
   status: "active",
