@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router";
 import type { PublicCapability } from "../features/capability/types.ts";
+import { useLocale } from "../i18n/Locale.tsx";
 import {
   borderColor,
   cardShadow,
@@ -39,10 +40,13 @@ export function ModelCard({
   model: ModelRecord;
   capability?: PublicCapability | null;
 }): ReactNode {
-  const health = shelfHealth(model, capability);
-  const context = contextLabel(model);
+  const { copy } = useLocale();
+  const health = shelfHealth(model, copy, capability);
+  const context = contextLabel(model, copy);
   const on = health.status === "live";
   const vendor = vendorMeta(model.vendor);
+  const modalities = modalityLabel(copy);
+  const modes = modeLabel(copy);
 
   return (
     <Link to={modelHref(model)} style={{ textDecoration: "none", color: "inherit" }}>
@@ -67,14 +71,14 @@ export function ModelCard({
           <div style={{ color: textSecondary, fontSize: 12, marginTop: 5 }}>{model.vendor_model}</div>
         </div>
         <div style={{ fontSize: 16, fontWeight: 680, letterSpacing: "-0.02em", lineHeight: 1.4 }}>
-          {priceSummary(model.pricing)}
+          {priceSummary(model.pricing, copy)}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, color: textSecondary, fontSize: 12 }}>
-          <span>{modalityLabel[model.modality]}</span>
+          <span>{modalities[model.modality]}</span>
           <span>·</span>
-          <span>{modeLabel[model.mode]}</span>
+          <span>{modes[model.mode]}</span>
           <span>·</span>
-          <span>{unitLabel(model)}</span>
+          <span>{unitLabel(model, copy)}</span>
           {context ? (
             <>
               <span>·</span>

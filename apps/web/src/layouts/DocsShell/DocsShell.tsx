@@ -1,10 +1,12 @@
 import { Button, Layout } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
+import { LangSwitch } from "../../i18n/LangSwitch.tsx";
+import { useLocale } from "../../i18n/Locale.tsx";
 import { brandLogoSrc } from "../../lib/publicAsset.ts";
 import { useDocsLocale, useSwitchDocsLocale } from "../../pages/docs/DocsLocale.tsx";
 import { docsNav } from "../../pages/docs/docsNav.ts";
-import { docsHref, type DocsLocale } from "../../pages/docs/locale.ts";
+import { docsHref } from "../../pages/docs/locale.ts";
 import { borderColor, layoutBg, surfaceBg, textPrimary, textSecondary } from "../../tokens/theme.ts";
 
 const { Header, Sider, Content } = Layout;
@@ -20,41 +22,11 @@ const headerStyle: CSSProperties = {
   borderBottom: `1px solid ${borderColor}`,
 };
 
-function LangSwitch(): ReactNode {
-  const locale = useDocsLocale();
-  const switchLocale = useSwitchDocsLocale();
-  const option = (id: DocsLocale, label: string): ReactNode => (
-    <button
-      type="button"
-      onClick={() => {
-        switchLocale(id);
-      }}
-      style={{
-        border: "none",
-        background: "none",
-        padding: 0,
-        cursor: "pointer",
-        fontSize: 13,
-        fontWeight: locale === id ? 650 : 400,
-        color: locale === id ? textPrimary : textSecondary,
-      }}
-    >
-      {label}
-    </button>
-  );
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      {option("zh", "中文")}
-      <span style={{ color: textSecondary }}>/</span>
-      {option("en", "EN")}
-    </div>
-  );
-}
-
 export function DocsShell(): ReactNode {
   const navigate = useNavigate();
   const locale = useDocsLocale();
-  const chrome = locale === "zh" ? { console: "控制台", docs: "文档" } : { console: "Console", docs: "Docs" };
+  const { copy } = useLocale();
+  const switchDocs = useSwitchDocsLocale();
 
   return (
     <Layout style={{ height: "100vh", background: layoutBg }}>
@@ -64,13 +36,13 @@ export function DocsShell(): ReactNode {
           style={{ display: "flex", alignItems: "center", gap: 8, color: textPrimary, textDecoration: "none" }}
         >
           <img src={brandLogoSrc} alt="" width={22} height={22} />
-          <span style={{ fontWeight: 650, letterSpacing: "0.04em" }}>{locale === "zh" ? "万象" : "Myriad"}</span>
-          <span style={{ color: textSecondary, fontWeight: 400 }}>{chrome.docs}</span>
+          <span style={{ fontWeight: 650, letterSpacing: "0.04em" }}>{copy.brand}</span>
+          <span style={{ color: textSecondary, fontWeight: 400 }}>{copy.docs}</span>
         </Link>
         <div style={{ flex: 1 }} />
-        <LangSwitch />
+        <LangSwitch onSwitch={switchDocs} />
         <Button type="link" href="https://github.com/starcloud530/myriad" target="_blank" rel="noreferrer">
-          GitHub
+          {copy.github}
         </Button>
         <Button
           type="primary"
@@ -78,7 +50,7 @@ export function DocsShell(): ReactNode {
             void navigate("/home");
           }}
         >
-          {chrome.console}
+          {copy.console}
         </Button>
       </Header>
       <Layout style={{ flex: 1, minHeight: 0 }}>

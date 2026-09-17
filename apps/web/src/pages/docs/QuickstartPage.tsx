@@ -109,17 +109,30 @@ export function QuickstartPage(): ReactNode {
         ]}
       />
 
-      <DocsCallout title={zh ? "本地" : "Local"}>
-        {zh ? "网关" : "Gateway"} <DocsCode>http://127.0.0.1:8791</DocsCode>
-        {zh ? "。控制台与文档 " : ". Console and docs "}
-        <DocsCode>http://127.0.0.1:18081</DocsCode>
-        {zh ? "。没有密钥时先用种子 " : ". No key yet? Use the seed "}
-        <DocsCode>dev-key</DocsCode>
-        {zh ? "，或到 " : ", or issue one at "}
-        <Link to="/keys" style={{ color: accentColor }}>
-          Keys
-        </Link>
-        {zh ? " 签发。" : "."}
+      <DocsCallout title={zh ? "生产与本地" : "Production"}>
+        {zh ? (
+          <>
+            生产网关先部署在海外 Cloudflare Workers。本地开发用{" "}
+            <DocsCode>http://127.0.0.1:8791</DocsCode>
+            ，控制台与文档 <DocsCode>http://127.0.0.1:18081</DocsCode>。没有密钥时先用种子{" "}
+            <DocsCode>dev-key</DocsCode>，或到{" "}
+            <Link to="/keys" style={{ color: accentColor }}>
+              Keys
+            </Link>{" "}
+            签发。
+          </>
+        ) : (
+          <>
+            Production ships on Cloudflare Workers, overseas first. Local gateway{" "}
+            <DocsCode>http://127.0.0.1:8791</DocsCode>
+            . Console and docs <DocsCode>http://127.0.0.1:18081</DocsCode>. No key yet? Use{" "}
+            <DocsCode>dev-key</DocsCode>, or issue one at{" "}
+            <Link to="/keys" style={{ color: accentColor }}>
+              Keys
+            </Link>
+            .
+          </>
+        )}
       </DocsCallout>
 
       <DocsH2>{zh ? "第一次请求" : "First request"}</DocsH2>

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { useLocale } from "../../i18n/Locale.tsx";
 import { accentColor, borderColor, cardShadow, surfaceBg, textPrimary, textSecondary } from "../../tokens/theme.ts";
 import { PageFrame } from "./PageFrame.tsx";
 import { PageHeader } from "./PageHeader.tsx";
@@ -13,9 +14,10 @@ export function ComingSoon({
   description: string;
   points: string[];
 }): ReactNode {
+  const { copy } = useLocale();
   return (
     <PageFrame>
-      <PageHeader eyebrow="即将上线" title={title} description={description} />
+      <PageHeader eyebrow={copy.soon.eyebrow} title={title} description={description} />
       <div
         style={{
           display: "grid",
@@ -45,15 +47,15 @@ export function ComingSoon({
         ))}
       </div>
       <p style={{ margin: 0, color: textSecondary, fontSize: 14 }}>
-        现在可以先
+        {copy.soon.now}
         <Link to="/keys" style={{ color: accentColor }}>
-          创建密钥
+          {copy.soon.createKey}
         </Link>
-        ，或去
+        {copy.soon.or}
         <Link to="/playground" style={{ color: accentColor }}>
-          试用模型
+          {copy.soon.tryModel}
         </Link>
-        。
+        .
       </p>
     </PageFrame>
   );

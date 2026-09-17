@@ -9,11 +9,11 @@
 </p>
 
 <p align="center">
-  <a href="https://starcloud530.github.io/myriad/docs/quickstart">Docs</a>
+  <a href="https://starcloud530.github.io/myriad/docs/en/quickstart">Docs</a>
   ·
-  <a href="https://starcloud530.github.io/myriad/docs/api">API</a>
+  <a href="https://starcloud530.github.io/myriad/docs/en/api">API</a>
   ·
-  <a href="https://starcloud530.github.io/myriad/docs/sdk">SDK</a>
+  <a href="https://starcloud530.github.io/myriad/docs/en/sdk">SDK</a>
   ·
   <a href="LICENSE">License</a>
   ·
@@ -56,11 +56,11 @@ The path is always `POST /v1/capabilities/:id`. There is no OpenAI-compat `/v1/m
 
 Published on GitHub Pages:
 
-- [Quickstart](https://starcloud530.github.io/myriad/docs/quickstart)
-- [API](https://starcloud530.github.io/myriad/docs/api)
-- [TypeScript SDK](https://starcloud530.github.io/myriad/docs/sdk)
-- [API keys](https://starcloud530.github.io/myriad/docs/keys)
-- [Errors](https://starcloud530.github.io/myriad/docs/errors)
+- [Quickstart](https://starcloud530.github.io/myriad/docs/en/quickstart)
+- [API](https://starcloud530.github.io/myriad/docs/en/api)
+- [TypeScript SDK](https://starcloud530.github.io/myriad/docs/en/sdk)
+- [API keys](https://starcloud530.github.io/myriad/docs/en/keys)
+- [Errors](https://starcloud530.github.io/myriad/docs/en/errors)
 
 ## Run
 

@@ -3,7 +3,7 @@ export { ModelCard } from "./Card.tsx";
 export { ModelDetail } from "./Detail.tsx";
 export { contextLabel, shelfHealth } from "./health.ts";
 export { filterModels, getModel, listModels } from "./load.ts";
-export { modeLabel, modalityLabel, modelTags, priceSummary } from "./price.ts";
+export { modeLabel, modalityLabel, priceSummary } from "./price.ts";
 export { ModelShelf } from "./Shelf.tsx";
 export { modelHref, modelKey } from "./spec.ts";
 export type { ModelRecord } from "./spec.ts";

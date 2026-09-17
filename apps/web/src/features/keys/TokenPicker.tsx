@@ -1,6 +1,7 @@
 import { Input, Select, Typography } from "antd";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { useLocale } from "../../i18n/Locale.tsx";
 import { rememberSecret } from "./sessionSecrets.ts";
 import { displayKey, type ProductKey } from "./types.ts";
 
@@ -17,6 +18,7 @@ export function TokenPicker({
   onChange: (id: string) => void;
   onSecret?: (id: string, secret: string) => void;
 }): ReactNode {
+  const { copy } = useLocale();
   const selected = keys.find((row) => row.id === value);
   const missing = Boolean(selected && !selected.system && !secret);
 
@@ -26,7 +28,7 @@ export function TokenPicker({
         <Select
           style={{ minWidth: 280 }}
           value={value}
-          placeholder="选择密钥"
+          placeholder={copy.token.placeholder}
           options={keys
             .filter((row) => row.status === "active")
             .map((row) => ({
@@ -35,12 +37,12 @@ export function TokenPicker({
             }))}
           onChange={onChange}
         />
-        <Link to="/keys">管理密钥</Link>
+        <Link to="/keys">{copy.token.manage}</Link>
       </div>
       {missing ? (
         <div>
           <Typography.Text type="secondary">
-            完整密钥只在创建时展示。粘贴后才能调用，也会写进本页会话。
+            {copy.token.paste}
           </Typography.Text>
           <Input.Password
             style={{ marginTop: 8, maxWidth: 420 }}

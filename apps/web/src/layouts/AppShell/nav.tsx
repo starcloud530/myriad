@@ -10,6 +10,7 @@ import {
   ToolOutlined,
 } from "@ant-design/icons";
 import type { ReactNode } from "react";
+import type { Messages } from "../../i18n/messages.ts";
 
 export interface NavLeaf {
   path: string;
@@ -30,22 +31,24 @@ export function isNavGroup(item: NavItem): item is NavGroup {
   return "children" in item;
 }
 
-export const navItems: NavItem[] = [
-  { path: "/home", title: "模型", icon: <HomeOutlined /> },
-  { path: "/keys", title: "密钥", icon: <ApiOutlined /> },
-  { path: "/playground", title: "试用", icon: <ExperimentOutlined /> },
-  { path: "/usage", title: "用量", icon: <BarChartOutlined /> },
-  { path: "/billing", title: "账单", icon: <PayCircleOutlined /> },
-  {
-    key: "developer",
-    title: "管理",
-    icon: <ControlOutlined />,
-    children: [
-      { path: "/dev/channels", title: "渠道", icon: <AppstoreOutlined /> },
-      { path: "/dev/pricing", title: "计费", icon: <SettingOutlined /> },
-      { path: "/dev/ops", title: "运维", icon: <ToolOutlined /> },
-    ],
-  },
-];
+export function navItems(copy: Messages): NavItem[] {
+  return [
+    { path: "/home", title: copy.nav.models, icon: <HomeOutlined /> },
+    { path: "/keys", title: copy.nav.keys, icon: <ApiOutlined /> },
+    { path: "/playground", title: copy.nav.playground, icon: <ExperimentOutlined /> },
+    { path: "/usage", title: copy.nav.usage, icon: <BarChartOutlined /> },
+    { path: "/billing", title: copy.nav.billing, icon: <PayCircleOutlined /> },
+    {
+      key: "developer",
+      title: copy.nav.admin,
+      icon: <ControlOutlined />,
+      children: [
+        { path: "/dev/channels", title: copy.nav.channels, icon: <AppstoreOutlined /> },
+        { path: "/dev/pricing", title: copy.nav.pricing, icon: <SettingOutlined /> },
+        { path: "/dev/ops", title: copy.nav.ops, icon: <ToolOutlined /> },
+      ],
+    },
+  ];
+}
 
 export const docsPath = "/docs";

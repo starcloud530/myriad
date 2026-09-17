@@ -1,12 +1,8 @@
 import type { ReactNode } from "react";
 import { ModelShelf } from "../../catalog-engine/index.ts";
+import { useLocale } from "../../i18n/Locale.tsx";
 
 export function PlaygroundPage(): ReactNode {
-  return (
-    <ModelShelf
-      eyebrow="试用"
-      title="在线试跑"
-      intro="选一个模型，用你的密钥立刻调用。价格与可用性写在卡片上。"
-    />
-  );
+  const { copy } = useLocale();
+  return <ModelShelf eyebrow={copy.play.eyebrow} title={copy.play.title} intro={copy.play.intro} />;
 }

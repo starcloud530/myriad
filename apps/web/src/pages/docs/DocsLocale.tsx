@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router";
+import { useLocale } from "../../i18n/Locale.tsx";
 import {
   detectLocale,
   docsHref,
@@ -9,7 +10,7 @@ import {
   type DocsLocale,
 } from "./locale.ts";
 
-const LocaleContext = createContext<DocsLocale>("zh");
+const LocaleContext = createContext<DocsLocale>("en");
 
 export function useDocsLocale(): DocsLocale {
   return useContext(LocaleContext);
@@ -24,15 +25,16 @@ export function DocsLocaleGate({ children }: { children: ReactNode }): ReactNode
 }
 
 function DocsLocaleSync({ locale, children }: { locale: DocsLocale; children: ReactNode }): ReactNode {
+  const { setLocale } = useLocale();
   useEffect(() => {
     persistLocale(locale);
-    document.documentElement.lang = locale === "zh" ? "zh-CN" : "en";
-  }, [locale]);
+    setLocale(locale);
+  }, [locale, setLocale]);
   return <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>;
 }
 
 export function DocsLegacyRedirect({ slug }: { slug: "quickstart" | "api" | "sdk" | "keys" | "errors" }): ReactNode {
-  return <Navigate to={docsHref(detectLocale(), slug)} replace />;
+  return <Navigate to={docsHref("en", slug)} replace />;
 }
 
 export function DocsIndexRedirect(): ReactNode {
@@ -42,7 +44,9 @@ export function DocsIndexRedirect(): ReactNode {
 export function useSwitchDocsLocale(): (next: DocsLocale) => void {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setLocale } = useLocale();
   return (next: DocsLocale) => {
+    setLocale(next);
     persistLocale(next);
     const parts = location.pathname.split("/").filter(Boolean);
     const slug = isDocsSlug(parts[2]) ? parts[2] : "quickstart";

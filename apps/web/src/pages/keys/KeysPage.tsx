@@ -9,6 +9,7 @@ import { StatRow } from "../../components/biz/StatRow.tsx";
 import { forgetSecret } from "../../features/keys/sessionSecrets.ts";
 import { displayKey, type ProductKey } from "../../features/keys/types.ts";
 import { useProductKeys } from "../../features/keys/useProductKeys.ts";
+import { useLocale } from "../../i18n/Locale.tsx";
 import { createKey, deleteKey, rotateKey, updateKey } from "../../lib/api.ts";
 import { getDevApiKey } from "../../lib/devKey.ts";
 
@@ -17,15 +18,17 @@ interface KeyForm {
   description: string;
 }
 
-function formatTime(iso: string): string {
+function formatTime(iso: string, locale: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) {
     return iso;
   }
-  return date.toLocaleString("zh-CN", { hour12: false });
+  return date.toLocaleString(locale === "zh" ? "zh-CN" : "en-US", { hour12: false });
 }
 
 export function KeysPage(): ReactNode {
+  const { locale, copy } = useLocale();
+  const k = copy.keys;
   const bootstrap = getDevApiKey();
   const { keys, loading, error, reload, remember } = useProductKeys();
   const [query, setQuery] = useState("");
@@ -49,23 +52,23 @@ export function KeysPage(): ReactNode {
       title: "API Key",
       render: (_, row) => <Typography.Text copyable={row.system ? { text: row.prefix } : false}>{displayKey(row)}</Typography.Text>,
     },
-    { title: "标签", dataIndex: "tag" },
-    { title: "描述", dataIndex: "description", ellipsis: true },
+    { title: k.tag, dataIndex: "tag" },
+    { title: k.description, dataIndex: "description", ellipsis: true },
     {
-      title: "创建时间",
+      title: k.created,
       dataIndex: "created_at",
       width: 180,
-      render: (value: string) => formatTime(value),
+      render: (value: string) => formatTime(value, locale),
     },
     {
-      title: "状态",
+      title: k.status,
       dataIndex: "status",
       width: 88,
       render: (status: ProductKey["status"], row) =>
-        row.system ? <Tag>系统</Tag> : <Tag color={status === "active" ? "green" : "default"}>{status === "active" ? "启用" : "停用"}</Tag>,
+        row.system ? <Tag>{k.system}</Tag> : <Tag color={status === "active" ? "green" : "default"}>{status === "active" ? k.active : k.disabled}</Tag>,
     },
     {
-      title: "操作",
+      title: k.actions,
       width: 220,
       render: (_, row) => {
         return (
@@ -79,7 +82,7 @@ export function KeysPage(): ReactNode {
                 editForm.setFieldsValue({ tag: row.tag, description: row.description });
               }}
             >
-              编辑
+              {k.edit}
             </Button>
             <Button
               type="link"
@@ -87,9 +90,9 @@ export function KeysPage(): ReactNode {
               disabled={row.system}
               onClick={() => {
                 Modal.confirm({
-                  title: "重置密钥？",
-                  content: "旧的密钥立刻失效。新密钥只会展示一次。",
-                  okText: "重置",
+                  title: k.rotateTitle,
+                  content: k.rotateBody,
+                  okText: k.rotate,
                   onOk: async () => {
                     const body = await rotateKey(bootstrap, row.id);
                     remember(body.key);
@@ -98,7 +101,7 @@ export function KeysPage(): ReactNode {
                 });
               }}
             >
-              重置
+              {k.rotate}
             </Button>
             <Button
               type="link"
@@ -107,19 +110,19 @@ export function KeysPage(): ReactNode {
               disabled={row.system}
               onClick={() => {
                 Modal.confirm({
-                  title: "删除这把密钥？",
-                  okText: "删除",
+                  title: k.removeTitle,
+                  okText: k.remove,
                   okButtonProps: { danger: true },
                   onOk: async () => {
                     await deleteKey(bootstrap, row.id);
                     forgetSecret(row.id);
                     await reload();
-                    void message.success("已删除");
+                    void message.success(k.deleted);
                   },
                 });
               }}
             >
-              删除
+              {k.remove}
             </Button>
           </Space>
         );
@@ -130,9 +133,9 @@ export function KeysPage(): ReactNode {
   return (
     <PageFrame>
       <PageHeader
-        eyebrow="账户"
-        title="密钥"
-        description="一把密钥调用全部能力。完整密钥只显示一次，请立刻保存。"
+        eyebrow={k.eyebrow}
+        title={k.title}
+        description={k.intro}
         extra={
           <Button
             type="primary"
@@ -142,24 +145,24 @@ export function KeysPage(): ReactNode {
               setCreating(true);
             }}
           >
-            新建密钥
+            {k.create}
           </Button>
         }
       />
       <StatRow
         items={[
-          { label: "密钥", value: String(keys.length) },
-          { label: "启用中", value: String(keys.filter((row) => row.status === "active").length) },
-          { label: "网关", value: error ? "离线" : "在线" },
+          { label: k.count, value: String(keys.length) },
+          { label: k.enabled, value: String(keys.filter((row) => row.status === "active").length) },
+          { label: k.gateway, value: error ? k.offline : k.online },
         ]}
       />
       <Card
         styles={{ body: { paddingTop: 16 } }}
-        title="密钥列表"
+        title={k.list}
         extra={
           <Input.Search
             allowClear
-            placeholder="搜索标签、描述或前缀"
+            placeholder={k.search}
             style={{ width: 240 }}
             value={query}
             onChange={(event) => {
@@ -182,9 +185,10 @@ export function KeysPage(): ReactNode {
         )}
       </Card>
       <Modal
-        title="新建密钥"
+        title={k.createTitle}
         open={creating}
-        okText="创建"
+        okText={k.createOk}
+        cancelText={k.cancel}
         onCancel={() => {
           setCreating(false);
         }}
@@ -198,18 +202,19 @@ export function KeysPage(): ReactNode {
         }}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 8 }}>
-          <Form.Item name="tag" label="标签" rules={[{ required: true, message: "请填写标签" }]}>
-            <Input placeholder="例如：生产、评测" maxLength={32} />
+          <Form.Item name="tag" label={k.tag} rules={[{ required: true, message: k.tagRequired }]}>
+            <Input placeholder={k.tagPh} maxLength={32} />
           </Form.Item>
-          <Form.Item name="description" label="描述">
-            <Input.TextArea rows={3} placeholder="这把密钥给谁用" maxLength={120} />
+          <Form.Item name="description" label={k.description}>
+            <Input.TextArea rows={3} placeholder={k.descPh} maxLength={120} />
           </Form.Item>
         </Form>
       </Modal>
       <Modal
-        title="编辑密钥"
+        title={k.editTitle}
         open={Boolean(editing)}
-        okText="保存"
+        okText={k.save}
+        cancelText={k.cancel}
         onCancel={() => {
           setEditing(null);
         }}
@@ -221,23 +226,23 @@ export function KeysPage(): ReactNode {
             await updateKey(bootstrap, editing.id, values);
             await reload();
             setEditing(null);
-            void message.success("已保存");
+            void message.success(k.saved);
           });
         }}
       >
         <Form form={editForm} layout="vertical" style={{ marginTop: 8 }}>
-          <Form.Item name="tag" label="标签" rules={[{ required: true, message: "标签不能为空" }]}>
+          <Form.Item name="tag" label={k.tag} rules={[{ required: true, message: k.tagRequired }]}>
             <Input maxLength={32} />
           </Form.Item>
-          <Form.Item name="description" label="描述">
+          <Form.Item name="description" label={k.description}>
             <Input.TextArea rows={3} maxLength={120} />
           </Form.Item>
         </Form>
       </Modal>
       <Modal
-        title="请保存这把密钥"
+        title={k.saveOnce}
         open={Boolean(revealed)}
-        okText="已复制并关闭"
+        okText={k.copiedClose}
         cancelButtonProps={{ style: { display: "none" } }}
         onCancel={() => {
           setRevealed(null);
@@ -245,7 +250,7 @@ export function KeysPage(): ReactNode {
         onOk={() => {
           if (revealed?.secret) {
             void navigator.clipboard.writeText(revealed.secret);
-            void message.success("已复制");
+            void message.success(k.copied);
           }
           setRevealed(null);
         }}
@@ -253,7 +258,7 @@ export function KeysPage(): ReactNode {
         {revealed?.secret ? (
           <div style={{ display: "grid", gap: 12 }}>
             <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-              完整密钥只显示这一次。之后列表里只会看到前缀。
+              {k.saveOnceBody}
             </Typography.Paragraph>
             <Typography.Text code copyable>
               {revealed.secret}

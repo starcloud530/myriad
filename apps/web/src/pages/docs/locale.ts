@@ -1,12 +1,12 @@
-export type DocsLocale = "zh" | "en";
+import { detectLocale as detectUiLocale, persistLocale as persistUiLocale, isLocale, type Locale } from "../../i18n/locale.ts";
 
-const storageKey = "myriad.docs.locale";
+export type DocsLocale = Locale;
 
 export const docsSlugs = ["quickstart", "api", "sdk", "keys", "errors"] as const;
 export type DocsSlug = (typeof docsSlugs)[number];
 
 export function isDocsLocale(value: string | null | undefined): value is DocsLocale {
-  return value === "zh" || value === "en";
+  return isLocale(value);
 }
 
 export function isDocsSlug(value: string | undefined): value is DocsSlug {
@@ -14,26 +14,11 @@ export function isDocsSlug(value: string | undefined): value is DocsSlug {
 }
 
 export function detectLocale(): DocsLocale {
-  try {
-    const saved = localStorage.getItem(storageKey);
-    if (isDocsLocale(saved)) {
-      return saved;
-    }
-  } catch {
-    /* ignore */
-  }
-  if (typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh")) {
-    return "zh";
-  }
-  return "en";
+  return detectUiLocale();
 }
 
 export function persistLocale(locale: DocsLocale): void {
-  try {
-    localStorage.setItem(storageKey, locale);
-  } catch {
-    /* ignore */
-  }
+  persistUiLocale(locale);
 }
 
 export function docsHref(locale: DocsLocale, slug: DocsSlug): string {

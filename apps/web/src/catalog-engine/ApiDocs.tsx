@@ -2,6 +2,7 @@ import { Button, Segmented, Steps, Typography } from "antd";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { PublicCapability } from "../features/capability/types.ts";
+import { useLocale } from "../i18n/Locale.tsx";
 import { TokenPicker } from "../features/keys/TokenPicker.tsx";
 import { useProductKeys } from "../features/keys/useProductKeys.ts";
 import { invokeCapability } from "../lib/api.ts";
@@ -16,6 +17,7 @@ export function CapabilityApiDocs({
   model: ModelRecord;
   capability?: PublicCapability | null;
 }): ReactNode {
+  const { copy } = useLocale();
   const { keys, selectedId, secret, setSelectedId, captureSecret } = useProductKeys();
   const endpoints = useMemo(() => testEndpoints(model), [model]);
   const [endpointId, setEndpointId] = useState(endpoints[0]?.id ?? "");
@@ -56,10 +58,10 @@ export function CapabilityApiDocs({
 
   return (
     <div style={{ display: "grid", gap: 28, maxWidth: 820 }}>
-      <Steps current={step} items={[{ title: "选择密钥" }, { title: "选择接口" }]} />
+      <Steps current={step} items={[{ title: copy.api.pickKey }, { title: copy.api.pickApi }]} />
 
       <section style={{ display: "grid", gap: 10 }}>
-        <Typography.Text strong>1. 密钥</Typography.Text>
+        <Typography.Text strong>1. {copy.api.key}</Typography.Text>
         <TokenPicker
           keys={keys}
           value={selectedId}
@@ -77,7 +79,7 @@ export function CapabilityApiDocs({
       </section>
 
       <section style={{ display: "grid", gap: 10, opacity: secret ? 1 : 0.45, pointerEvents: secret ? "auto" : "none" }}>
-        <Typography.Text strong>2. 测试接口</Typography.Text>
+        <Typography.Text strong>2. {copy.api.test}</Typography.Text>
         <Typography.Text type="secondary" style={{ color: textSecondary }}>
           POST {path}
         </Typography.Text>
@@ -98,11 +100,11 @@ export function CapabilityApiDocs({
           <CodeBlock code={curl} />
           <div>
             <Button type="primary" loading={pending} disabled={!endpoint.runnable || !secret} onClick={() => void runTest()}>
-              测试
+              {copy.api.run}
             </Button>
             {!endpoint.runnable ? (
               <Typography.Text type="secondary" style={{ marginLeft: 12 }}>
-                该接口暂未开放测试。
+                {copy.api.closed}
               </Typography.Text>
             ) : null}
           </div>

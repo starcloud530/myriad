@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import { ComingSoon } from "../../components/biz/ComingSoon.tsx";
+import { useLocale } from "../../i18n/Locale.tsx";
 
 export function OpsPage(): ReactNode {
+  const { copy } = useLocale();
   return (
     <ComingSoon
-      title="运维"
-      description="延迟、错误率与上游状态将集中在这一页。"
-      points={["渠道健康", "错误率与延迟", "近期故障"]}
+      title={copy.soon.opsTitle}
+      description={copy.soon.opsIntro}
+      points={[copy.soon.ops1, copy.soon.ops2, copy.soon.ops3]}
     />
   );
 }

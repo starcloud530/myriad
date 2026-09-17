@@ -20,7 +20,7 @@ const bubble: CSSProperties = {
 };
 
 function latencyOf(started: number): string {
-  return `耗时 ${Math.round(performance.now() - started)} ms`;
+  return `${Math.round(performance.now() - started)} ms`;
 }
 
 function assistantText(body: unknown): string {
@@ -54,7 +54,7 @@ export function TryPlay({
   model: ModelRecord;
 }): ReactNode {
   if (!apiKey) {
-    return <Typography.Text type="secondary">先选一把网关认的密钥，或到 API Keys 新建。</Typography.Text>;
+    return <Typography.Text type="secondary">Select a key, or create one under Keys.</Typography.Text>;
   }
   if (model.kind === "chat") {
     return <ChatPlay apiKey={apiKey} capabilityId={model.capability} />;
@@ -63,16 +63,16 @@ export function TryPlay({
     return <ImagePlay apiKey={apiKey} capabilityId={model.capability} />;
   }
   if (model.kind === "generate.audio") {
-    return <SimplePlay apiKey={apiKey} capabilityId={model.capability} field="text" placeholder="要朗读的句子" sample="你好，万象。" />;
+    return <SimplePlay apiKey={apiKey} capabilityId={model.capability} field="text" placeholder="Sentence to speak" sample="Hello from Myriad." />;
   }
   if (model.kind === "generate.video") {
-    return <SimplePlay apiKey={apiKey} capabilityId={model.capability} field="prompt" placeholder="视频提示词" sample="一只橘猫走过阳光下的窗台" />;
+    return <SimplePlay apiKey={apiKey} capabilityId={model.capability} field="prompt" placeholder="Video prompt" sample="An orange cat walking past a sunlit window" />;
   }
-  return <SimplePlay apiKey={apiKey} capabilityId={model.capability} field="input" placeholder="输入文本或 JSON" sample="试用万象" />;
+  return <SimplePlay apiKey={apiKey} capabilityId={model.capability} field="input" placeholder="Text or JSON" sample="Try Myriad" />;
 }
 
 function ChatPlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: string }): ReactNode {
-  const [draft, setDraft] = useState("用一句话介绍万象");
+  const [draft, setDraft] = useState("Introduce Myriad in one sentence.");
   const [rows, setRows] = useState<Array<{ role: "user" | "assistant"; text: string; latency?: string }>>([]);
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
@@ -107,7 +107,7 @@ function ChatPlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: stri
     <div style={thread}>
       {rows.map((row, index) => (
         <div key={`${row.role}-${index}`} style={{ ...bubble, marginLeft: row.role === "assistant" ? 0 : 48 }}>
-          <Typography.Text type="secondary">{row.role === "user" ? "你" : "助手"}</Typography.Text>
+          <Typography.Text type="secondary">{row.role === "user" ? "You" : "Assistant"}</Typography.Text>
           {row.latency ? (
             <Typography.Text type="secondary" style={{ marginLeft: 8 }}>
               {row.latency}
@@ -120,7 +120,7 @@ function ChatPlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: stri
       <Input.TextArea
         value={draft}
         autoSize={{ minRows: 2, maxRows: 6 }}
-        placeholder="输入要发送的内容"
+        placeholder="Type a message"
         onChange={(event) => {
           setDraft(event.target.value);
         }}
@@ -133,7 +133,7 @@ function ChatPlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: stri
       />
       <div>
         <Button type="primary" loading={pending} onClick={() => void send()}>
-          发送
+          Send
         </Button>
       </div>
     </div>
@@ -141,7 +141,7 @@ function ChatPlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: stri
 }
 
 function ImagePlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: string }): ReactNode {
-  const [prompt, setPrompt] = useState("一只坐在书堆上的橘猫，水彩");
+  const [prompt, setPrompt] = useState("An orange cat sitting on a stack of books, watercolor");
   const [uris, setUris] = useState<string[]>([]);
   const [latency, setLatency] = useState("");
   const [error, setError] = useState("");
@@ -174,7 +174,7 @@ function ImagePlay({ apiKey, capabilityId }: { apiKey: string; capabilityId: str
       />
       <div>
         <Button type="primary" loading={pending} onClick={() => void run()}>
-          生成
+          Generate
         </Button>
         {latency ? (
           <Typography.Text type="secondary" style={{ marginLeft: 12 }}>
@@ -238,7 +238,7 @@ function SimplePlay({
       />
       <div>
         <Button type="primary" loading={pending} onClick={() => void run()}>
-          运行
+          Run
         </Button>
         {latency ? (
           <Typography.Text type="secondary" style={{ marginLeft: 12 }}>

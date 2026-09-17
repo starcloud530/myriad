@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import { ComingSoon } from "../../components/biz/ComingSoon.tsx";
+import { useLocale } from "../../i18n/Locale.tsx";
 
 export function BillingPage(): ReactNode {
+  const { copy } = useLocale();
   return (
     <ComingSoon
-      title="账单"
-      description="月度账单、发票与支付方式将在这里管理。"
-      points={["按账期查看消费", "下载发票", "设置余额与额度"]}
+      title={copy.soon.billingTitle}
+      description={copy.soon.billingIntro}
+      points={[copy.soon.billing1, copy.soon.billing2, copy.soon.billing3]}
     />
   );
 }

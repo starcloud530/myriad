@@ -3,6 +3,8 @@ import { Button, Layout } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
+import { LangSwitch } from "../../i18n/LangSwitch.tsx";
+import { useLocale } from "../../i18n/Locale.tsx";
 import { brandLogoSrc } from "../../lib/publicAsset.ts";
 import { borderColor, layoutBg, surfaceBg, textPrimary, textSecondary } from "../../tokens/theme.ts";
 import { SidebarNav } from "./SidebarNav.tsx";
@@ -30,6 +32,7 @@ function HeaderBar({
   onToggle: () => void;
 }): ReactNode {
   const navigate = useNavigate();
+  const { copy } = useLocale();
 
   return (
     <Header style={headerStyle}>
@@ -39,15 +42,16 @@ function HeaderBar({
         onClick={onToggle}
       />
       <img src={brandLogoSrc} alt="" width={26} height={26} style={{ display: "block" }} />
-      <span style={{ fontWeight: 680, color: textPrimary, letterSpacing: "0.06em", fontSize: 16 }}>万象</span>
-      <span style={{ color: textSecondary, fontSize: 13 }}>控制台</span>
+      <span style={{ fontWeight: 680, color: textPrimary, letterSpacing: "0.06em", fontSize: 16 }}>{copy.brand}</span>
+      <span style={{ color: textSecondary, fontSize: 13 }}>{copy.console}</span>
       <div style={{ flex: 1 }} />
+      <LangSwitch />
       <Button
         onClick={() => {
           void navigate(docsPath);
         }}
       >
-        文档
+        {copy.docs}
       </Button>
     </Header>
   );
@@ -55,10 +59,11 @@ function HeaderBar({
 
 export function AppShell(): ReactNode {
   const [collapsed, setCollapsed] = useState(false);
+  const { copy } = useLocale();
 
   useEffect(() => {
-    document.title = "万象";
-  }, []);
+    document.title = copy.brand;
+  }, [copy.brand]);
 
   return (
     <Layout style={{ height: "100vh" }}>

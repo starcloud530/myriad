@@ -5,6 +5,7 @@ import { PageFrame } from "../components/biz/PageFrame.tsx";
 import { PageHeader } from "../components/biz/PageHeader.tsx";
 import { StatRow } from "../components/biz/StatRow.tsx";
 import { useCatalog } from "../features/capability/useCatalog.ts";
+import { useLocale } from "../i18n/Locale.tsx";
 import { getDevApiKey } from "../lib/devKey.ts";
 import { textSecondary } from "../tokens/theme.ts";
 import { ModelCard } from "./Card.tsx";
@@ -22,14 +23,6 @@ const gridStyle: CSSProperties = {
   gap: 16,
 };
 
-const filters: Array<{ label: string; value: "all" | ModelRecord["modality"] }> = [
-  { label: "全部", value: "all" },
-  { label: modalityLabel.text, value: "text" },
-  { label: modalityLabel.image, value: "image" },
-  { label: modalityLabel.video, value: "video" },
-  { label: modalityLabel.audio, value: "audio" },
-];
-
 export function ModelShelf({
   eyebrow,
   title,
@@ -39,16 +32,18 @@ export function ModelShelf({
   title: string;
   intro?: string;
 }): ReactNode {
+  const { copy } = useLocale();
   const all = useMemo(() => listModels(), []);
   const { capabilities } = useCatalog(getDevApiKey());
   const byId = useMemo(() => new Map(capabilities.map((item) => [item.id, item])), [capabilities]);
   const [query, setQuery] = useState("");
   const [modality, setModality] = useState<"all" | ModelRecord["modality"]>("all");
   const [layout, setLayout] = useState<"model" | "vendor">("model");
+  const modalities = modalityLabel(copy);
 
   const visible = useMemo(() => filterModels(all, query, modality), [all, modality, query]);
   const vendorGroups = useMemo(() => groupByVendor(visible), [visible]);
-  const liveCount = all.filter((model) => shelfHealth(model, byId.get(model.capability)).status === "live").length;
+  const liveCount = all.filter((model) => shelfHealth(model, copy, byId.get(model.capability)).status === "live").length;
   const vendorCount = new Set(all.map((model) => model.vendor)).size;
 
   return (
@@ -56,14 +51,20 @@ export function ModelShelf({
       <PageHeader eyebrow={eyebrow} title={title} description={intro} />
       <StatRow
         items={[
-          { label: "模型", value: String(all.length) },
-          { label: "厂商", value: String(vendorCount) },
-          { label: "可用", value: String(liveCount) },
+          { label: copy.shelf.models, value: String(all.length) },
+          { label: copy.shelf.vendors, value: String(vendorCount) },
+          { label: copy.shelf.live, value: String(liveCount) },
         ]}
       />
       <div className="paper-toolbar">
         <Segmented
-          options={filters}
+          options={[
+            { label: copy.shelf.all, value: "all" },
+            { label: modalities.text, value: "text" },
+            { label: modalities.image, value: "image" },
+            { label: modalities.video, value: "video" },
+            { label: modalities.audio, value: "audio" },
+          ]}
           value={modality}
           onChange={(value) => {
             setModality(value as "all" | ModelRecord["modality"]);
@@ -71,7 +72,7 @@ export function ModelShelf({
         />
         <Input.Search
           allowClear
-          placeholder="搜索模型或厂商"
+          placeholder={copy.shelf.search}
           style={{ width: 280 }}
           value={query}
           onChange={(event) => {
@@ -82,8 +83,8 @@ export function ModelShelf({
           <Segmented
             value={layout}
             options={[
-              { label: "按模型", value: "model" },
-              { label: "按厂商", value: "vendor" },
+              { label: copy.shelf.byModel, value: "model" },
+              { label: copy.shelf.byVendor, value: "vendor" },
             ]}
             onChange={(value) => {
               setLayout(value as "model" | "vendor");
@@ -92,7 +93,7 @@ export function ModelShelf({
         </div>
       </div>
       {visible.length === 0 ? (
-        <Empty description={all.length === 0 ? "还没有可展示的模型" : "没有匹配的模型"} />
+        <Empty description={all.length === 0 ? copy.shelf.empty : copy.shelf.none} />
       ) : layout === "model" ? (
         <section style={gridStyle}>
           {visible.map((model) => (
@@ -109,7 +110,7 @@ export function ModelShelf({
                   <VendorMark vendor={group.vendor} size={32} />
                   <div>
                     <div style={{ fontWeight: 680 }}>{meta.name}</div>
-                    <div style={{ fontSize: 12, color: textSecondary }}>{group.items.length} 个模型</div>
+                    <div style={{ fontSize: 12, color: textSecondary }}>{copy.shelf.count(group.items.length)}</div>
                   </div>
                 </div>
                 <div style={gridStyle}>

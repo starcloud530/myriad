@@ -1,56 +1,48 @@
+import type { Messages } from "../i18n/messages.ts";
 import type { ModelPricing, ModelRecord } from "./spec.ts";
 
-export const modalityLabel: Record<ModelRecord["modality"], string> = {
-  text: "文本",
-  image: "图像",
-  audio: "音频",
-  video: "视频",
-  multimodal: "多模态",
-};
-
-export const modeLabel: Record<ModelRecord["mode"], string> = {
-  sync: "同步",
-  async: "异步",
-};
-
-function yuan(value: number): string {
-  return Number.isInteger(value) ? `¥${value}` : `¥${value}`;
+export function modalityLabel(copy: Messages): Record<ModelRecord["modality"], string> {
+  return {
+    text: copy.labels.text,
+    image: copy.labels.image,
+    audio: copy.labels.audio,
+    video: copy.labels.video,
+    multimodal: copy.labels.multimodal,
+  };
 }
 
-export function priceSummary(pricing: ModelPricing): string {
+export function modeLabel(copy: Messages): Record<ModelRecord["mode"], string> {
+  return {
+    sync: copy.labels.sync,
+    async: copy.labels.async,
+  };
+}
+
+function yuan(value: number): string {
+  return `¥${value}`;
+}
+
+export function priceSummary(pricing: ModelPricing, copy: Messages): string {
+  const labels = copy.labels;
   if (pricing.unit === "token") {
     const prompt = pricing.prompt?.cny_per_million;
     const completion = pricing.completion?.cny_per_million;
     if (prompt != null && completion != null) {
-      return `输入 ${yuan(prompt)} / 百万 · 输出 ${yuan(completion)} / 百万`;
+      return `${copy.detail.input} ${yuan(prompt)} ${labels.perMillion} · ${copy.detail.output} ${yuan(completion)} ${labels.perMillion}`;
     }
     if (prompt != null) {
-      return `输入 ${yuan(prompt)} / 百万 token`;
+      return `${copy.detail.input} ${yuan(prompt)} ${labels.perMillion} token`;
     }
-    return "按 token 计费";
+    return labels.pricedToken;
   }
   if (pricing.unit === "image") {
     const amount = pricing.image?.cny_per_unit;
-    return amount == null ? "按张计费" : `${yuan(amount)} / 张`;
+    return amount == null ? labels.pricedImage : `${yuan(amount)} ${labels.perImage}`;
   }
   if (pricing.unit === "audio_second" || pricing.unit === "video_second") {
     const amount = pricing.second?.cny_per_unit;
-    const unit = pricing.unit === "audio_second" ? "音频秒" : "视频秒";
-    return amount == null ? `按${unit}计费` : `${yuan(amount)} / ${unit}`;
+    const unit = pricing.unit === "audio_second" ? labels.audioSec : labels.videoSec;
+    return amount == null ? `${unit}` : `${yuan(amount)} / ${unit}`;
   }
-  return "按次计费";
-}
-
-export function modelTags(model: ModelRecord): string[] {
-  const tags = [modalityLabel[model.modality], modeLabel[model.mode], priceSummary(model.pricing)];
-  if (model.vendor === "myriad") {
-    tags.push("万象");
-  }
-  if (model.pricing.source === "estimate") {
-    tags.push("估价");
-  }
-  if (!model.enabled) {
-    tags.push("已停用");
-  }
-  return tags;
+  return labels.pricedRequest;
 }

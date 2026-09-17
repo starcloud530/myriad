@@ -2,13 +2,15 @@ import { Menu } from "antd";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { useLocale } from "../../i18n/Locale.tsx";
 import { isNavGroup, navItems } from "./nav.tsx";
 
 export function SidebarNav({ collapsed }: { collapsed: boolean }): ReactNode {
   const location = useLocation();
   const navigate = useNavigate();
+  const { copy } = useLocale();
 
-  const items = navItems.map((item) => {
+  const items = navItems(copy).map((item) => {
     if (isNavGroup(item)) {
       return {
         key: item.key,

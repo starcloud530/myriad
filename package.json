@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "One API for chat, image, video, and speech.",
-  "homepage": "https://starcloud530.github.io/myriad/docs/quickstart",
+  "homepage": "https://starcloud530.github.io/myriad/docs/en/quickstart",
   "license": "MIT",
   "engines": {
     "node": ">=20"
