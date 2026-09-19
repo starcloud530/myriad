@@ -1,0 +1,36 @@
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #000;
+  padding: 32px;
+}
+
+.login-card {
+  display: grid;
+  gap: 14px;
+  width: min(420px, 100%);
+}
+
+.login-card h1 {
+  margin: 8px 0 0;
+  font-size: 28px;
+  font-weight: 680;
+  letter-spacing: -0.03em;
+}
+
+.login-card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.login-error {
+  color: #fca5a5;
+  white-space: pre-wrap;
+}
+
+.login-foot {
+  color: #6b7280;
+}

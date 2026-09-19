@@ -2,6 +2,8 @@ import { ConfigProvider, theme } from "antd";
 import enUS from "antd/locale/en_US";
 import zhCN from "antd/locale/zh_CN";
 import type { ReactNode } from "react";
+import { FxProvider } from "../catalog-engine/Fx.tsx";
+import { AuthProvider } from "../features/auth/Auth.tsx";
 import { LocaleProvider, useLocale } from "../i18n/Locale.tsx";
 import { appToken } from "../tokens/theme.ts";
 
@@ -21,7 +23,11 @@ function Themed({ children }: { children: ReactNode }): ReactNode {
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <LocaleProvider>
-      <Themed>{children}</Themed>
+      <AuthProvider>
+        <FxProvider>
+          <Themed>{children}</Themed>
+        </FxProvider>
+      </AuthProvider>
     </LocaleProvider>
   );
 }

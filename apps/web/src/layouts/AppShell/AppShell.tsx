@@ -2,8 +2,9 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Layout } from "antd";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { BrandMark } from "../../components/brand/BrandMark.tsx";
+import { useAuth } from "../../features/auth/Auth.tsx";
 import { GhostButton } from "../../components/ui/GhostButton.tsx";
 import { IconButton } from "../../components/ui/IconButton.tsx";
 import { LangSwitch } from "../../i18n/LangSwitch.tsx";
@@ -35,6 +36,7 @@ function HeaderBar({
 }): ReactNode {
   const navigate = useNavigate();
   const { copy } = useLocale();
+  const { me, logout } = useAuth();
 
   return (
     <Header style={headerStyle}>
@@ -46,6 +48,11 @@ function HeaderBar({
       <span style={{ color: textSecondary, fontSize: 12 }}>{copy.console}</span>
       <div style={{ flex: 1 }} />
       <LangSwitch />
+      {me ? (
+        <span style={{ color: textSecondary, fontSize: 12, maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {me.user.display_name || me.user.email}
+        </span>
+      ) : null}
       <GhostButton
         onClick={() => {
           void navigate(docsPath);
@@ -53,13 +60,26 @@ function HeaderBar({
       >
         {copy.docs}
       </GhostButton>
+      {me ? (
+        <GhostButton
+          onClick={() => {
+            void logout().then(() => {
+              void navigate("/login");
+            });
+          }}
+        >
+          {copy.auth.logout}
+        </GhostButton>
+      ) : null}
     </Header>
   );
 }
 
 export function AppShell(): ReactNode {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
   const { copy } = useLocale();
+  const playHome = location.pathname === "/playground";
 
   useEffect(() => {
     document.title = copy.brand;
@@ -88,7 +108,13 @@ export function AppShell(): ReactNode {
             background: layoutBg,
           }}
         >
-          <div style={{ flex: 1, overflow: "auto", padding: "32px 36px 64px" }}>
+          <div
+            style={{
+              flex: 1,
+              overflow: playHome ? "hidden" : "auto",
+              padding: playHome ? 0 : "32px 36px 64px",
+            }}
+          >
             <Outlet />
           </div>
         </Content>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { listCapabilities } from "../../lib/api.ts";
 import type { PublicCapability } from "./types.ts";
 
-export function useCatalog(key: string): {
+export function useCatalog(key?: string): {
   capabilities: PublicCapability[];
   error: string;
   loading: boolean;

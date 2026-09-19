@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router";
+import { RequireAdmin, RequireAuth } from "../features/auth/Auth.tsx";
 import { AppShell } from "../layouts/AppShell/AppShell.tsx";
+import { LoginPage } from "../pages/auth/LoginPage.tsx";
 import { DocsShell } from "../layouts/DocsShell/DocsShell.tsx";
 import { BillingPage } from "../pages/billing/BillingPage.tsx";
 import { ChannelsPage } from "../pages/dev/ChannelsPage.tsx";
@@ -46,16 +48,44 @@ export function AppRoutes(): ReactNode {
         <Route path="errors" element={<ErrorsPage />} />
         <Route path="*" element={<Navigate to="quickstart" replace />} />
       </Route>
-      <Route element={<AppShell />}>
+      <Route path="/login" element={<LoginPage />} />
+      <Route
+        element={
+          <RequireAuth>
+            <AppShell />
+          </RequireAuth>
+        }
+      >
         <Route path="/home" element={<HomePage />} />
         <Route path="/keys" element={<KeysPage />} />
         <Route path="/playground" element={<PlaygroundPage />} />
         <Route path="/playground/:vendor/:id" element={<PlaygroundDetailPage />} />
         <Route path="/usage" element={<UsagePage />} />
         <Route path="/billing" element={<BillingPage />} />
-        <Route path="/dev/channels" element={<ChannelsPage />} />
-        <Route path="/dev/pricing" element={<PricingRulesPage />} />
-        <Route path="/dev/ops" element={<OpsPage />} />
+        <Route
+          path="/dev/channels"
+          element={
+            <RequireAdmin>
+              <ChannelsPage />
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/dev/pricing"
+          element={
+            <RequireAdmin>
+              <PricingRulesPage />
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/dev/ops"
+          element={
+            <RequireAdmin>
+              <OpsPage />
+            </RequireAdmin>
+          }
+        />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Route>
     </Routes>

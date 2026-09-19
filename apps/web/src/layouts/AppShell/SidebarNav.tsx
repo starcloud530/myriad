@@ -2,6 +2,8 @@ import { Menu } from "antd";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { useAuth } from "../../features/auth/Auth.tsx";
+import { isConsoleAdmin } from "../../features/auth/admin.ts";
 import { useLocale } from "../../i18n/Locale.tsx";
 import { isNavGroup, navItems } from "./nav.tsx";
 
@@ -9,8 +11,9 @@ export function SidebarNav({ collapsed }: { collapsed: boolean }): ReactNode {
   const location = useLocation();
   const navigate = useNavigate();
   const { copy } = useLocale();
+  const { me } = useAuth();
 
-  const items = navItems(copy).map((item) => {
+  const items = navItems(copy, isConsoleAdmin(me)).map((item) => {
     if (isNavGroup(item)) {
       return {
         key: item.key,
@@ -26,7 +29,14 @@ export function SidebarNav({ collapsed }: { collapsed: boolean }): ReactNode {
     return {
       key: item.path,
       icon: item.icon,
-      label: item.title,
+      label: item.badge === "ai" ? (
+        <span className="nav-label-row">
+          {item.title}
+          <span className="nav-ai-tag">AI</span>
+        </span>
+      ) : (
+        item.title
+      ),
     };
   });
 
