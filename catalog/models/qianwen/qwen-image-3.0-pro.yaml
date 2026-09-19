@@ -1,0 +1,32 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: qwen-image-3.0-pro
+vendor: qianwen
+name: Qwen Image 3.0 Pro
+vendor_model: qwen-image-3.0-pro
+
+kind: generate.image
+modality: image
+mode: sync
+capability: image.generate
+enabled: true
+
+description: |
+  阿里云百炼当前推荐的千问生图旗舰。官方选型页写明擅长文本渲染，
+  能生成贴合物理材质的中英文，适合图表、海报、PPT。同步调用；
+  不走 /chat/completions；可另走 compatible-mode /images/generations。
+  北京刊例文生图 1K 0.25 / 2K 0.50 元/张。
+
+docs: https://help.aliyun.com/zh/model-studio/qwen-image-3-0-pro
+
+lineage:
+  origin: qwen
+  origin_model: qwen-image-3.0-pro
+
+pricing:
+  unit: image
+  currency: CNY
+  as_of: 2026-09-18
+  source: official
+  image:
+    cny_per_unit: 0.25

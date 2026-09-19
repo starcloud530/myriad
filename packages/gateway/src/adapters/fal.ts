@@ -55,9 +55,15 @@ export class FalAdapter implements ChannelAdapter {
   }
 
   private modelOf(request: AdapterRequest): string {
-    const input = request.input as unknown as ImageGenerateInput;
+    const input = request.input as unknown as ImageGenerateInput & VideoGenerateInput;
     if (request.capability.kind === ProtocolKinds.imageGenerate && input.refs?.length) {
-      return readString(request.channel.config, "edit_model") ?? "fal-ai/gpt-image-2/edit";
+      return readString(request.channel.config, "edit_model") ?? "openai/gpt-image-2/edit";
+    }
+    if (request.capability.kind === ProtocolKinds.videoGenerate && input.refs?.length) {
+      const i2v = readString(request.channel.config, "i2v_model");
+      if (i2v) {
+        return i2v;
+      }
     }
     const model = readString(request.channel.config, "vendor_model");
     if (!model) {
@@ -80,7 +86,14 @@ export class FalAdapter implements ChannelAdapter {
       return { text: input.text };
     }
     const input = request.input as unknown as VideoGenerateInput;
-    return { prompt: input.prompt };
+    const model = this.modelOf(request);
+    const payload: Record<string, unknown> = { prompt: input.prompt };
+    if (model.includes("h3-max-turbo")) {
+      payload.prompt_expansion_mode = "balanced";
+      if (input.duration_s) payload.duration = String(input.duration_s);
+      if (input.refs?.[0]?.uri) payload.image_url = input.refs[0].uri;
+    }
+    return payload;
   }
 
   private collectUris(body: Record<string, unknown>, kind: "image" | "audio", key: string): Array<{ kind: "image" | "audio"; uri: string }> {

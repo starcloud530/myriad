@@ -1,0 +1,31 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: wan2.7-image-pro
+vendor: qianwen
+name: Wan 2.7 Image Pro
+vendor_model: wan2.7-image-pro
+
+kind: generate.image
+modality: image
+mode: async
+capability: image.generate
+enabled: true
+
+description: |
+  通义万相 2.7 生图旗舰。百炼选型页写明功能最全，支持组图、最高 4096×4096，
+  以及五官 / 色彩 / 超长文字。异步为主，文档称该档也支持同步。
+  走百炼 AIGC 图像接口，不是 openai_compat。北京刊例 0.50 元/张。
+
+docs: https://help.aliyun.com/zh/model-studio/wan2-7-image-pro
+
+lineage:
+  origin: wanxiang
+  origin_model: wan2.7-image-pro
+
+pricing:
+  unit: image
+  currency: CNY
+  as_of: 2026-09-18
+  source: official
+  image:
+    cny_per_unit: 0.5

@@ -13,11 +13,11 @@ modality: video
 mode: async
 # 挂到哪条北向能力；广场可以按型号拆卡，调用仍打这个 capability
 capability: video.generate
-enabled: true
+enabled: false
 
 description: |
-  MiniMax Hailuo Video 01 文生视频，经 fal 上架。典型输出约 6 秒、720p。
-  第一期作火山 Seedance 的生视频兜底。官方按条计价 $0.5/条。
+  上一代 MiniMax Video 01。Hailuo-02 官方页标 Previous generation，已从默认目录拿掉。
+  视频兜底改走 H3 Max Turbo。
 
 docs: https://fal.ai/models/fal-ai/minimax/video-01
 

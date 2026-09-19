@@ -4,7 +4,7 @@ id: gpt-image-2-edit
 vendor: fal
 name: GPT Image 2 Edit
 # 上游调用名，原样传给适配器
-vendor_model: fal-ai/gpt-image-2/edit
+vendor_model: openai/gpt-image-2/edit
 
 # 七族之一：chat | complete | generate.image | generate.video | generate.audio
 #          | transduce | score.classify | score.regress | score.embed | extract | realtime
@@ -19,7 +19,7 @@ description: |
   OpenAI GPT Image 2 图编辑，经 fal 上架。最多 16 张参考图，可细粒度改图。
   默认 quality=high；标价按官方「一张参考图 + 1024×768 high」刊例。
 
-docs: https://fal.ai/models/fal-ai/gpt-image-2/edit
+docs: https://fal.ai/models/openai/gpt-image-2/edit
 
 # 同一物理型号被另一家服务商上架时，两份文件用同一 lineage 以后再合并
 lineage:

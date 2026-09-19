@@ -1,0 +1,30 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: minimax-h3-max
+vendor: fal
+name: MiniMax H3 Max
+vendor_model: minimax/h3-max/text-to-video
+
+kind: generate.video
+modality: video
+mode: async
+capability: video.generate
+enabled: true
+
+description: |
+  fal 官方 H3 Max 质量档（非 Turbo）。endpoint 为 minimax/h3-max/text-to-video。
+  与 Turbo 同能力，刊例约 2 倍。必填 prompt_expansion_mode。走 queue.fal.run。
+
+docs: https://fal.ai/models/minimax/h3-max/text-to-video
+
+lineage:
+  origin: minimax
+  origin_model: h3-max
+
+pricing:
+  unit: video_second
+  currency: CNY
+  as_of: 2026-09-18
+  source: estimate
+  second:
+    cny_per_unit: 0.54

@@ -1,0 +1,30 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: doubao-seedream-4-5
+vendor: volcengine
+name: Doubao Seedream 4.5
+vendor_model: doubao-seedream-4-5-251128
+
+kind: generate.image
+modality: image
+mode: sync
+capability: image.generate
+enabled: true
+
+description: |
+  豆包 Seedream 4.5。官方预置型号 doubao-seedream-4-5-251128，
+  同步 /api/v3/images/generations，支持组图。刊例 0.25 元/张。
+
+docs: https://docs.volcengine.com/docs/ark/image-generation-api?lang=zh
+
+lineage:
+  origin: doubao
+  origin_model: doubao-seedream-4-5-251128
+
+pricing:
+  unit: image
+  currency: CNY
+  as_of: 2026-09-18
+  source: official
+  image:
+    cny_per_unit: 0.25

@@ -1,0 +1,30 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: wan2.7-i2v
+vendor: qianwen
+name: Wan 2.7 Image to Video
+vendor_model: wan2.7-i2v
+
+kind: generate.video
+modality: video
+mode: async
+capability: video.generate
+enabled: true
+
+description: |
+  通义万相 2.7 图生视频。一等 I2V：首帧 / 首尾帧 / 续写。
+  北京刊例与文生视频同档，720P 0.6 / 1080P 1.0 元/秒。仅异步。
+
+docs: https://help.aliyun.com/zh/model-studio/image-to-video-general-api-reference
+
+lineage:
+  origin: wanxiang
+  origin_model: wan2.7-i2v
+
+pricing:
+  unit: video_second
+  currency: CNY
+  as_of: 2026-09-18
+  source: official
+  second:
+    cny_per_unit: 0.6

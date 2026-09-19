@@ -64,9 +64,14 @@ export function defaultSeed(): CatalogSeed {
         description: "文生图。传入参考图时走编辑接口，最多 16 张。",
         channels: [
           channel("fal-image", AdapterKinds.fal, "primary", {
-            vendor_model: "fal-ai/gpt-image-2",
-            edit_model: "fal-ai/gpt-image-2/edit",
+            vendor_model: "openai/gpt-image-2",
+            edit_model: "openai/gpt-image-2/edit",
             secret_env: "FAL_API_KEY",
+          }),
+          channel("volcengine-seedream", AdapterKinds.volcengine, "fallback", {
+            base_url: "https://ark.cn-beijing.volces.com/api/v3",
+            vendor_model: "doubao-seedream-5-0-pro-260628",
+            secret_env: "VOLCENGINE_API_KEY",
           }),
         ],
       },
@@ -78,15 +83,16 @@ export function defaultSeed(): CatalogSeed {
         mode: "async",
         billing: { unit: "video_second" },
         enabled: true,
-        description: "异步视频生成。优先火山 Seedance，失败回落到 MiniMax。",
+        description: "异步视频生成。优先火山 Seedance 2.5，失败回落到 fal H3 Max Turbo。",
         channels: [
           channel("volcengine-seedance", AdapterKinds.volcengine, "primary", {
             base_url: "https://ark.cn-beijing.volces.com/api/v3",
-            vendor_model: "doubao-seedance",
+            vendor_model: "doubao-seedance-2-5-260628",
             secret_env: "VOLCENGINE_API_KEY",
           }),
           channel("fal-video", AdapterKinds.fal, "fallback", {
-            vendor_model: "fal-ai/minimax/video-01",
+            vendor_model: "minimax/h3-max-turbo/text-to-video",
+            i2v_model: "minimax/h3-max-turbo/image-to-video",
             secret_env: "FAL_API_KEY",
           }),
         ],
@@ -145,7 +151,7 @@ export function defaultSeed(): CatalogSeed {
       {
         id: "dev",
         name: "开发调试",
-        apiKeys: ["dev-key"],
+        apiKeys: ["dev-key"], // local CLI only; stripped when MYRIAD_ENV=production
         capabilities: [
           CapabilityIds.chat,
           CapabilityIds.imageGenerate,

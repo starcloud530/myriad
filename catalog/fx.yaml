@@ -1,0 +1,4 @@
+# Display FX only. Every model card settles in CNY.
+# usd_cny = CNY per 1 USD. The console overlays this when the ECB feed is reachable.
+usd_cny: 6.72
+as_of: 2026-09-16

@@ -3,8 +3,8 @@
 id: seedance
 vendor: volcengine
 name: Seedance
-# seed 接线占位名，不是方舟控制台里的真实接入点 / 预置型号
-vendor_model: doubao-seedance
+# 渠道默认接到当前官方 2.5 预置型号；广场拆卡仍看 doubao-seedance-2-5
+vendor_model: doubao-seedance-2-5-260628
 
 # 七族之一：chat | complete | generate.image | generate.video | generate.audio
 #          | transduce | score.classify | score.regress | score.embed | extract | realtime
@@ -13,12 +13,11 @@ modality: video
 mode: async
 # 挂到哪条北向能力；广场可以按型号拆卡，调用仍打这个 capability
 capability: video.generate
-enabled: true
+enabled: false
 
 description: |
-  火山方舟 Seedance 生视频渠道占位。vendor_model 目前是 doubao-seedance，仅作 seed 接线名，
-  不能当官方预置型号直接调用。具体接入点 ID（ep-…）或以控制台开通的官方型号名为准，
-  以方舟控制台当前列表为准。异步任务：POST /api/v3/contents/generations/tasks。
+  已下架占位卡。官方没有 doubao-seedance 这个预置 ID。
+  广场请用 doubao-seedance-2-5 / doubao-seedance-2-0。网关主路已改 2.5。
 
 docs: https://www.volcengine.com/docs/82379/1520757
 

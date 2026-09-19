@@ -1,0 +1,30 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: wan2.7-image
+vendor: qianwen
+name: Wan 2.7 Image
+vendor_model: wan2.7-image
+
+kind: generate.image
+modality: image
+mode: sync
+capability: image.generate
+enabled: true
+
+description: |
+  通义万相 2.7 生图量产档。与 Pro 同协议，更快更便宜，最高 2K，无 4K。
+  北京刊例 0.20 元/张。不走 /chat/completions。
+
+docs: https://help.aliyun.com/zh/model-studio/wan2-7-image
+
+lineage:
+  origin: wanxiang
+  origin_model: wan2.7-image
+
+pricing:
+  unit: image
+  currency: CNY
+  as_of: 2026-09-18
+  source: official
+  image:
+    cny_per_unit: 0.2

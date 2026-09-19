@@ -1,0 +1,32 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: wan2.7-t2v
+vendor: qianwen
+name: Wan 2.7 Text to Video
+# GA 别名；钉死版本可用 wan2.7-t2v-2026-06-12
+vendor_model: wan2.7-t2v
+
+kind: generate.video
+modality: video
+mode: async
+capability: video.generate
+enabled: true
+
+description: |
+  通义万相 2.7 文生视频。官方 GA 别名 wan2.7-t2v，有声、多镜头、声画同步；
+  720P / 1080P，时长 2–15 秒。北京刊例 720P 0.6 / 1080P 1.0 元/秒。
+  走 DashScope video-synthesis，必须异步，不是 compatible-mode 对话。
+
+docs: https://help.aliyun.com/zh/model-studio/text-to-video-api-reference
+
+lineage:
+  origin: wanxiang
+  origin_model: wan2.7-t2v
+
+pricing:
+  unit: video_second
+  currency: CNY
+  as_of: 2026-09-18
+  source: official
+  second:
+    cny_per_unit: 0.6

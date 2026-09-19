@@ -1,0 +1,31 @@
+# 路径即主键：vendor + id。禁止写 API Key / secret_env。
+
+id: doubao-seedream-5-0-pro
+vendor: volcengine
+name: Doubao Seedream 5.0 Pro
+vendor_model: doubao-seedream-5-0-pro-260628
+
+kind: generate.image
+modality: image
+mode: sync
+capability: image.generate
+enabled: true
+
+description: |
+  豆包 Seedream 5.0 Pro 旗舰生图。方舟图片生成 API 示例型号
+  doubao-seedream-5-0-pro-260628。同步 POST /api/v3/images/generations。
+  支持文生图、单图/多图参考；产品页刊例 0.30 元起/张。
+
+docs: https://docs.volcengine.com/docs/ark/image-generation-api?lang=zh
+
+lineage:
+  origin: doubao
+  origin_model: doubao-seedream-5-0-pro-260628
+
+pricing:
+  unit: image
+  currency: CNY
+  as_of: 2026-09-18
+  source: official
+  image:
+    cny_per_unit: 0.3
