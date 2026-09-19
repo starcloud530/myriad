@@ -112,25 +112,19 @@ export function QuickstartPage(): ReactNode {
       <DocsCallout title={zh ? "生产与本地" : "Production"}>
         {zh ? (
           <>
-            生产网关先部署在海外 Cloudflare Workers。本地开发用{" "}
+            生产控制台与 API 同域，先登录再签发 Key。本地网关{" "}
             <DocsCode>http://127.0.0.1:8791</DocsCode>
-            ，控制台与文档 <DocsCode>http://127.0.0.1:18081</DocsCode>。没有密钥时先用种子{" "}
-            <DocsCode>dev-key</DocsCode>，或到{" "}
-            <Link to="/keys" style={{ color: accentColor }}>
-              Keys
-            </Link>{" "}
-            签发。
+            ，控制台 <DocsCode>http://127.0.0.1:18081</DocsCode>。种子{" "}
+            <DocsCode>dev-key</DocsCode>{" "}
+            仅本地有效，生产已关闭。SDK / CLI 请用控制台签发的 Key。
           </>
         ) : (
           <>
-            Production ships on Cloudflare Workers, overseas first. Local gateway{" "}
-            <DocsCode>http://127.0.0.1:8791</DocsCode>
-            . Console and docs <DocsCode>http://127.0.0.1:18081</DocsCode>. No key yet? Use{" "}
-            <DocsCode>dev-key</DocsCode>, or issue one at{" "}
-            <Link to="/keys" style={{ color: accentColor }}>
-              Keys
-            </Link>
-            .
+            Production console and API share one origin. Sign in, then issue a key. Local
+            gateway <DocsCode>http://127.0.0.1:8791</DocsCode>, console{" "}
+            <DocsCode>http://127.0.0.1:18081</DocsCode>. The seed{" "}
+            <DocsCode>dev-key</DocsCode> is local-only and disabled in production. SDK / CLI
+            use a console-issued key.
           </>
         )}
       </DocsCallout>

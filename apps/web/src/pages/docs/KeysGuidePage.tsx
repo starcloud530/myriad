@@ -122,15 +122,15 @@ console.log(key.secret);
         {zh ? (
           <>
             没带、假密钥、或已 <DocsCode>disabled</DocsCode>，一律{" "}
-            <DocsCode>401 unauthorized</DocsCode>。系统种子 <DocsCode>dev-key</DocsCode>{" "}
-            不能改、不能轮换、不能删（<DocsCode>403 forbidden</DocsCode>）。没绑{" "}
+            <DocsCode>401 unauthorized</DocsCode>。种子 <DocsCode>dev-key</DocsCode>{" "}
+            仅本地；生产必须用控制台签发的 Key。没绑{" "}
             <DocsCode>MYRIAD_KEYS</DocsCode> 时走进程内存储，重启会丢。
           </>
         ) : (
           <>
             Missing, fake, or <DocsCode>disabled</DocsCode> keys all return{" "}
-            <DocsCode>401 unauthorized</DocsCode>. The seed <DocsCode>dev-key</DocsCode> cannot be
-            changed, rotated, or deleted (<DocsCode>403 forbidden</DocsCode>). Without{" "}
+            <DocsCode>401 unauthorized</DocsCode>. The seed <DocsCode>dev-key</DocsCode> is
+            local-only; production uses a console-issued key. Without{" "}
             <DocsCode>MYRIAD_KEYS</DocsCode> the store is in-process and dies on restart.
           </>
         )}

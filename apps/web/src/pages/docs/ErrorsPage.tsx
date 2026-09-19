@@ -64,7 +64,9 @@ export function ErrorsPage(): ReactNode {
             "401",
             <DocsCode key="u">unauthorized</DocsCode>,
             zh ? "没带 Authorization，假密钥，或已 disabled。" : "Missing Authorization, fake key, or disabled.",
-            zh ? "控制台拿一把 active 的。本地可用种子 dev-key。" : "Issue an active key. Locally, use the seed dev-key.",
+            zh
+              ? "控制台登录后签发一把 active Key。dev-key 仅本地。"
+              : "Sign in and issue an active key. dev-key is local-only.",
           ],
           [
             "403",

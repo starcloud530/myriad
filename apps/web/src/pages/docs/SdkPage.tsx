@@ -66,7 +66,7 @@ export function SdkPage(): ReactNode {
 
 const myriad = createMyriad({
   baseUrl: "http://127.0.0.1:8791",
-  apiKey: process.env.MYRIAD_KEY ?? "dev-key",
+  apiKey: process.env.MYRIAD_KEY ?? "dev-key", // local only
 });
 
 const reply = await myriad.invoke("chat", {

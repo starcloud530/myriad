@@ -74,7 +74,7 @@
 .admin-price-head,
 .admin-price-list .admin-price-row {
   display: grid;
-  grid-template-columns: 24px 28px minmax(132px, 1.3fr) 78px 78px 72px;
+  grid-template-columns: 24px 28px minmax(132px, 1.3fr) minmax(160px, 1fr);
   gap: 8px;
   align-items: center;
 }
@@ -111,6 +111,16 @@
 
 .admin-price-row.is-saved {
   box-shadow: inset 2px 0 0 #9ca3af;
+}
+
+.admin-price-row.is-readonly {
+  cursor: default;
+}
+
+.admin-price-read {
+  color: #d4d4d4;
+  font-size: 12px;
+  text-align: right;
 }
 
 .admin-price-idx {
@@ -190,8 +200,7 @@
   grid-template-areas:
     "idx mark"
     "idx id"
-    "idx fields"
-    "idx save";
+    "idx read";
   align-items: start;
   gap: 8px 10px;
   padding: 12px;
@@ -211,11 +220,9 @@
   grid-area: id;
 }
 
-.admin-price-grid .admin-price-fields {
-  grid-area: fields;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+.admin-price-grid .admin-price-read {
+  grid-area: read;
+  text-align: left;
 }
 
 .admin-price-grid .admin-price-field:only-child {
@@ -270,7 +277,7 @@
   color: inherit;
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: default;
 }
 
 .admin-circuit.is-open .admin-circuit-row {
@@ -375,6 +382,19 @@
   color: #fff;
 }
 
+.admin-channel-health {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.admin-idle {
+  color: #6b7280;
+}
+
 .admin-breaker {
   display: inline-flex;
   align-items: center;
@@ -431,7 +451,84 @@
   overflow-x: auto;
 }
 
-/* —— Ops: chat desk —— */
+/* —— Ops: status desk —— */
+
+.admin-ops {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-ops-card {
+  padding: 16px;
+  border: 1px solid #2a2a2a;
+  background: #0a0a0a;
+}
+
+.admin-ops-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.admin-ops-status strong {
+  font-size: 18px;
+  font-weight: 550;
+}
+
+.admin-ops-meta {
+  margin: 10px 0 0;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.admin-ops-channels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.admin-ops-channel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-ops-channel-head strong {
+  display: block;
+  font-size: 13px;
+}
+
+.admin-ops-channel-head small {
+  display: block;
+  margin-top: 2px;
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.admin-ops-table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.admin-ops-table th,
+.admin-ops-table td {
+  padding: 8px 0;
+  border-bottom: 1px solid #1f1f1f;
+  text-align: left;
+}
+
+.admin-ops-table th {
+  color: #6b7280;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* leftover chat desk styles unused */
 
 .admin-desk {
   display: grid;

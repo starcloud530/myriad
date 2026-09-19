@@ -30,7 +30,7 @@ import { createMyriad } from "@myriad/sdk";
 
 const myriad = createMyriad({
   baseUrl: "http://127.0.0.1:8791",
-  apiKey: process.env.MYRIAD_KEY ?? "dev-key",
+  apiKey: process.env.MYRIAD_KEY ?? "dev-key", // local only; production uses a console-issued key
 });
 
 const { output } = await myriad.invoke("chat", {

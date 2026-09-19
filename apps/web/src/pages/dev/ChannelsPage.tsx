@@ -1,62 +1,83 @@
 import type { ReactNode } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { vendorLabel } from "../../catalog-engine/labels.ts";
 import { VendorMark } from "../../catalog-engine/VendorMark.tsx";
 import { PageFrame } from "../../components/biz/PageFrame.tsx";
 import { PageHeader } from "../../components/biz/PageHeader.tsx";
 import { StatusDot } from "../../components/ui/StatusDot.tsx";
+import { useCatalog } from "../../features/capability/useCatalog.ts";
+import type { PublicChannel, PublicCapability } from "../../features/capability/types.ts";
+import type { UsageGroup } from "../../features/usage/types.ts";
 import { useLocale } from "../../i18n/Locale.tsx";
+import { getUsage } from "../../lib/api.ts";
 import "./admin.css";
 
 interface ChannelRow {
   id: string;
   vendor: string;
-  role: "primary" | "fallback";
-  baseUrl: string;
-  secret: string;
-  live: boolean;
+  role: PublicChannel["role"];
+  enabled: boolean;
+  vendorModel?: string;
+  capabilities: string[];
 }
 
-const seed: ChannelRow[] = [
-  { id: "deepseek", vendor: "deepseek", role: "primary", baseUrl: "https://api.deepseek.com", secret: "DEEPSEEK_API_KEY", live: true },
-  { id: "qianwen", vendor: "qianwen", role: "fallback", baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1", secret: "QIANWEN_API_KEY", live: true },
-  { id: "fal-image", vendor: "fal", role: "primary", baseUrl: "https://fal.run", secret: "FAL_API_KEY", live: true },
-  { id: "volcengine", vendor: "volcengine", role: "primary", baseUrl: "https://ark.cn-beijing.volces.com", secret: "VOLC_API_KEY", live: true },
-  { id: "myriad-echo", vendor: "myriad", role: "primary", baseUrl: "worker://echo", secret: "—", live: true },
-];
+function collectChannels(capabilities: PublicCapability[]): ChannelRow[] {
+  const rows = new Map<string, ChannelRow>();
+  for (const capability of capabilities) {
+    for (const channel of capability.channels) {
+      const current = rows.get(channel.id);
+      if (current) {
+        if (!current.capabilities.includes(capability.id)) {
+          current.capabilities.push(capability.id);
+        }
+        continue;
+      }
+      rows.set(channel.id, {
+        id: channel.id,
+        vendor: channel.vendor,
+        role: channel.role,
+        enabled: channel.enabled,
+        vendorModel: channel.vendor_model,
+        capabilities: [capability.id],
+      });
+    }
+  }
+  return [...rows.values()].sort((left, right) => left.vendor.localeCompare(right.vendor) || left.id.localeCompare(right.id));
+}
+
+function formatMs(value: number): string {
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)} s`;
+  }
+  return `${Math.round(value)} ms`;
+}
 
 export function ChannelsPage(): ReactNode {
   const { locale, copy } = useLocale();
   const a = copy.admin;
-  const [rows, setRows] = useState(seed);
-  const [openId, setOpenId] = useState(seed[0]?.id ?? "");
-  const [copiedId, setCopiedId] = useState("");
-  const [pulseId, setPulseId] = useState("");
-  const pulseTimer = useRef(0);
-  const liveCount = rows.filter((row) => row.live).length;
+  const { capabilities, loading, error } = useCatalog();
+  const [health, setHealth] = useState<Record<string, UsageGroup>>({});
+  const rows = useMemo(() => collectChannels(capabilities), [capabilities]);
+  const liveCount = rows.filter((row) => row.enabled).length;
 
-  function toggle(id: string): void {
-    setRows((current) => current.map((item) => (item.id === id ? { ...item, live: !item.live } : item)));
-    setPulseId(id);
-    window.clearTimeout(pulseTimer.current);
-    pulseTimer.current = window.setTimeout(() => {
-      setPulseId((current) => (current === id ? "" : current));
-    }, 420);
-  }
-
-  function copyUrl(row: ChannelRow): void {
-    if (!navigator.clipboard) {
-      return;
-    }
-    void navigator.clipboard.writeText(row.baseUrl).then(
-      () => {
-        setCopiedId(row.id);
-      },
-      () => {
-        setCopiedId("");
-      },
-    );
-  }
+  useEffect(() => {
+    let cancelled = false;
+    getUsage("24h")
+      .then((report) => {
+        if (cancelled) {
+          return;
+        }
+        setHealth(Object.fromEntries(report.by_channel.map((row) => [row.id, row])));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setHealth({});
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <PageFrame>
@@ -75,23 +96,14 @@ export function ChannelsPage(): ReactNode {
           </div>
         }
       />
+      {error ? <div className="admin-empty">{error}</div> : null}
+      {!loading && rows.length === 0 && !error ? <div className="admin-empty">{copy.shelf.empty}</div> : null}
       <div className="admin-roster">
         {rows.map((row) => {
-          const open = openId === row.id;
-          const circuitClass = [
-            "admin-circuit",
-            row.live ? "is-live" : "is-down",
-            open ? "is-open" : "",
-            pulseId === row.id ? "is-pulse" : "",
-          ]
-            .filter(Boolean)
-            .join(" ");
+          const stat = health[row.id];
           return (
-            <article key={row.id} className={circuitClass}>
-              <div
-                className="admin-circuit-row"
-                onClick={() => setOpenId(row.id)}
-              >
+            <article key={row.id} className={row.enabled ? "admin-circuit is-live" : "admin-circuit is-down"}>
+              <div className="admin-circuit-row">
                 <VendorMark vendor={row.vendor} size={36} />
                 <div className="admin-circuit-id">
                   <strong>{vendorLabel(row.vendor, locale)}</strong>
@@ -99,42 +111,23 @@ export function ChannelsPage(): ReactNode {
                 </div>
                 <span className="admin-wire" aria-hidden />
                 <div className="admin-endpoint">
-                  <button
-                    type="button"
-                    className={copiedId === row.id ? "admin-url is-copied" : "admin-url"}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      copyUrl(row);
-                    }}
-                  >
-                    {copiedId === row.id ? copy.keys.copied : row.baseUrl}
-                  </button>
-                  <code className="admin-secret">{row.secret}</code>
+                  <span className="admin-url">{row.vendorModel || row.id}</span>
+                  <span className="admin-secret">
+                    {a.channelsCaps} {row.capabilities.join(" · ")}
+                  </span>
                 </div>
                 <span className={row.role === "primary" ? "admin-role is-primary" : "admin-role"}>{row.role}</span>
-                <button
-                  type="button"
-                  className={row.live ? "admin-breaker is-live" : "admin-breaker"}
-                  aria-pressed={row.live}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    toggle(row.id);
-                  }}
-                >
-                  <span className="admin-breaker-track">
-                    <span className="admin-breaker-knob" />
-                  </span>
-                  <StatusDot live={row.live} label={row.live ? copy.labels.live : copy.labels.disabled} />
-                </button>
-              </div>
-              {open ? (
-                <div className="admin-path">
-                  <span />
-                  <pre className="admin-mono">
-                    {`base_url=${row.baseUrl}\nsecret=${row.secret}\nrole=${row.role}\nlive=${row.live ? "1" : "0"}`}
-                  </pre>
+                <div className="admin-channel-health admin-mono">
+                  {stat ? (
+                    <>
+                      <StatusDot live={stat.ok >= 98} label={`${stat.ok}%`} />
+                      <span>{formatMs(stat.latency)}</span>
+                    </>
+                  ) : (
+                    <span className="admin-idle">{a.channelsIdle}</span>
+                  )}
                 </div>
-              ) : null}
+              </div>
             </article>
           );
         })}

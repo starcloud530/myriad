@@ -11,7 +11,7 @@ import type {
 export interface MyriadOptions {
   /** 网关 origin，不要带尾斜杠。浏览器里可传当前站点，走 Vite `/v1` 代理。 */
   baseUrl: string;
-  /** 北向产品密钥。控制台签发，或开发种子 `dev-key`。 */
+  /** 北向产品密钥。控制台签发；本地开发可用种子 `dev-key`（生产已关闭）。 */
   apiKey: string;
   fetch?: typeof fetch;
 }

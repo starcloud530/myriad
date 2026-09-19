@@ -9,7 +9,7 @@ const usage = `万象 CLI — 走 @myriad/sdk，同一套北向 API
 
 环境变量:
   MYRIAD_URL   默认 http://127.0.0.1:8791
-  MYRIAD_KEY   默认 dev-key
+  MYRIAD_KEY   本地默认 dev-key；生产请用控制台签发的 Key
 `;
 
 function envUrl(): string {
