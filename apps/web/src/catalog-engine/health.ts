@@ -12,18 +12,22 @@ export interface ShelfHealth {
   channels: string;
 }
 
+export function compactCount(value: number): string {
+  if (value >= 1_000_000) {
+    return `${value / 1_000_000}M`;
+  }
+  if (value >= 1000) {
+    return `${Math.round(value / 1000)}K`;
+  }
+  return String(value);
+}
+
 export function contextLabel(model: ModelRecord, copy: Messages): string | undefined {
   const length = model.specs?.context_length;
   if (length == null) {
     return undefined;
   }
-  if (length >= 1_000_000) {
-    return `${length / 1_000_000}M ${copy.labels.context}`;
-  }
-  if (length >= 1000) {
-    return `${Math.round(length / 1000)}K ${copy.labels.context}`;
-  }
-  return `${length} ${copy.labels.context}`;
+  return `${compactCount(length)} ${copy.labels.context}`;
 }
 
 export function unitLabel(model: ModelRecord, copy: Messages): string {

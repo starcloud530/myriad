@@ -11,6 +11,12 @@ mode: async
 capability: image.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [image]
+abilities:
+  playground: true
+
 description: |
   通义万相 2.7 生图旗舰。百炼选型页写明功能最全，支持组图、最高 4096×4096，
   以及五官 / 色彩 / 超长文字。异步为主，文档称该档也支持同步。

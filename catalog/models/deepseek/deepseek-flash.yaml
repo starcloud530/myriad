@@ -15,6 +15,15 @@ mode: sync
 capability: chat
 enabled: true
 
+io:
+  input: [text, image]
+  output: [text]
+abilities:
+  playground: true
+  thinking: true
+  vision: true
+  cache: true
+
 description: |
   DeepSeek-V4.1-Flash，官方当前主力对话型号，支持思考/非思考切换与图像理解，上下文 1M。
 

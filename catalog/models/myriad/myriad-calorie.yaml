@@ -16,6 +16,12 @@ mode: sync
 capability: calorie-recognize
 enabled: true
 
+io:
+  input: [image]
+  output: [text]
+abilities:
+  playground: true
+
 description: |
   万象自建，第一期先走接线。卡路里识别更接近抽取：从图片抽出食物与热量结构化结果。
   seed 里暂按 chat 占位接线，本货架 kind 用 extract，厂商是万象，不是第三方渠道。

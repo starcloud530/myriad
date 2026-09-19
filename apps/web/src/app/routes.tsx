@@ -60,6 +60,7 @@ export function AppRoutes(): ReactNode {
         <Route path="/keys" element={<KeysPage />} />
         <Route path="/playground" element={<PlaygroundPage />} />
         <Route path="/playground/:vendor/:id" element={<PlaygroundDetailPage />} />
+        <Route path="/playground/:vendor/:id/try" element={<PlaygroundDetailPage />} />
         <Route path="/usage" element={<UsagePage />} />
         <Route path="/billing" element={<BillingPage />} />
         <Route

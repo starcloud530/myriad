@@ -15,6 +15,14 @@ mode: sync
 capability: chat
 enabled: true
 
+io:
+  input: [text]
+  output: [text]
+abilities:
+  playground: true
+  thinking: true
+  cache: true
+
 description: |
   通义千问 Plus，效果与速度介于 Max 与 Turbo 之间，适合中等复杂任务；支持思考/非思考切换，中国内地实时推理按输入长度阶梯计价。
 

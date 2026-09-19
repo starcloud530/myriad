@@ -1,12 +1,28 @@
 import { parse } from "yaml";
 import { catalogSearchText } from "./labels.ts";
-import type { ModelKind, ModelModality, ModelMode, ModelPricing, ModelRecord, PricingUnit } from "./spec.ts";
+import type {
+  AbilityId,
+  ModelIo,
+  ModelKind,
+  ModelModality,
+  ModelMode,
+  ModelPricing,
+  ModelRecord,
+  ModelSpecs,
+  PricingUnit,
+  ToolId,
+} from "./spec.ts";
+import { ABILITY_IDS, TOOL_IDS } from "./spec.ts";
 
 const rawModules = import.meta.glob("../../../../catalog/models/*/*.yaml", {
   eager: true,
   query: "?raw",
   import: "default",
 }) as Record<string, string>;
+
+const modalities = new Set<ModelModality>(["text", "image", "audio", "video", "multimodal"]);
+const abilitySet = new Set<string>(ABILITY_IDS);
+const toolSet = new Set<string>(TOOL_IDS);
 
 const kinds = new Set<ModelKind>([
   "chat",
@@ -86,7 +102,7 @@ function parseModel(raw: unknown): ModelRecord | undefined {
   if (!kinds.has(kind)) {
     return undefined;
   }
-  const specsRaw = row.specs && typeof row.specs === "object" ? (row.specs as { context_length?: unknown }) : undefined;
+  const specsRaw = row.specs && typeof row.specs === "object" ? (row.specs as Record<string, unknown>) : undefined;
   const lineageRaw = row.lineage && typeof row.lineage === "object" ? (row.lineage as { origin?: unknown; origin_model?: unknown }) : undefined;
   return {
     id,
@@ -100,16 +116,99 @@ function parseModel(raw: unknown): ModelRecord | undefined {
     enabled: row.enabled !== false,
     description: asString(row.description) ?? "",
     docs: asString(row.docs),
+    io: parseIo(row.io) ?? fallbackIo(kind, modality),
+    abilities: parseFlags(row.abilities, abilitySet) as Partial<Record<AbilityId, boolean>>,
+    tools: parseFlags(row.tools, toolSet) as Partial<Record<ToolId, boolean>>,
     lineage: (() => {
       const origin = asString(lineageRaw?.origin);
       const origin_model = asString(lineageRaw?.origin_model);
       return origin && origin_model ? { origin, origin_model } : undefined;
     })(),
-    specs: specsRaw?.context_length != null && asNumber(specsRaw.context_length) != null
-      ? { context_length: asNumber(specsRaw.context_length) ?? undefined }
-      : undefined,
+    specs: parseSpecs(specsRaw),
     pricing,
   };
+}
+
+function parseModalities(raw: unknown): ModelModality[] {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  return raw
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter((item): item is ModelModality => modalities.has(item as ModelModality));
+}
+
+function parseIo(raw: unknown): ModelIo | undefined {
+  if (!raw || typeof raw !== "object") {
+    return undefined;
+  }
+  const row = raw as { input?: unknown; output?: unknown };
+  const input = parseModalities(row.input);
+  const output = parseModalities(row.output);
+  if (input.length === 0 || output.length === 0) {
+    return undefined;
+  }
+  return { input, output };
+}
+
+function fallbackIo(kind: ModelKind, modality: ModelModality): ModelIo {
+  if (kind === "generate.image") {
+    return { input: modality === "image" ? ["text", "image"] : ["text"], output: ["image"] };
+  }
+  if (kind === "generate.video") {
+    return { input: ["text"], output: ["video"] };
+  }
+  if (kind === "generate.audio") {
+    return { input: ["text"], output: ["audio"] };
+  }
+  if (kind === "transduce") {
+    return { input: ["audio"], output: ["text"] };
+  }
+  if (kind === "chat" || kind === "complete") {
+    return { input: [modality === "multimodal" ? "text" : modality], output: ["text"] };
+  }
+  return { input: [modality], output: ["text"] };
+}
+
+function parseFlags(raw: unknown, allowed: Set<string>): Record<string, boolean> {
+  if (!raw || typeof raw !== "object") {
+    return {};
+  }
+  const flags: Record<string, boolean> = {};
+  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+    if (allowed.has(key) && typeof value === "boolean") {
+      flags[key] = value;
+    }
+  }
+  return flags;
+}
+
+function parseSpecs(raw: Record<string, unknown> | undefined): ModelSpecs | undefined {
+  if (!raw) {
+    return undefined;
+  }
+  const specs: ModelSpecs = {};
+  const context = asNumber(raw.context_length);
+  const maxInput = asNumber(raw.max_input);
+  const maxOutput = asNumber(raw.max_output);
+  const tpm = asNumber(raw.tpm);
+  const rpm = asNumber(raw.rpm);
+  if (context != null) {
+    specs.context_length = context;
+  }
+  if (maxInput != null) {
+    specs.max_input = maxInput;
+  }
+  if (maxOutput != null) {
+    specs.max_output = maxOutput;
+  }
+  if (tpm != null) {
+    specs.tpm = tpm;
+  }
+  if (rpm != null) {
+    specs.rpm = rpm;
+  }
+  return Object.keys(specs).length ? specs : undefined;
 }
 
 const loaded: ModelRecord[] = [];

@@ -15,6 +15,13 @@ mode: sync
 capability: chat
 enabled: true
 
+io:
+  input: [text]
+  output: [text]
+abilities:
+  playground: true
+  cache: true
+
 description: |
   通义千问 Max，千问 2.5 系列超大规模文本型号，仅非思考模式；适合复杂推理与高质量生成。
 

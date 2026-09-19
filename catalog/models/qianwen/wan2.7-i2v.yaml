@@ -11,6 +11,13 @@ mode: async
 capability: video.generate
 enabled: true
 
+io:
+  input: [image]
+  output: [video]
+abilities:
+  playground: true
+  reference: true
+
 description: |
   通义万相 2.7 图生视频。一等 I2V：首帧 / 首尾帧 / 续写。
   北京刊例与文生视频同档，720P 0.6 / 1080P 1.0 元/秒。仅异步。

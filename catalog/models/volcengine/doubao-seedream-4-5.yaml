@@ -11,6 +11,12 @@ mode: sync
 capability: image.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [image]
+abilities:
+  playground: true
+
 description: |
   豆包 Seedream 4.5。官方预置型号 doubao-seedream-4-5-251128，
   同步 /api/v3/images/generations，支持组图。刊例 0.25 元/张。

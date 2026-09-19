@@ -15,6 +15,13 @@ mode: sync
 capability: image.generate
 enabled: true
 
+io:
+  input: [text, image]
+  output: [image]
+abilities:
+  playground: true
+  reference: true
+
 description: |
   OpenAI GPT Image 2 图编辑，经 fal 上架。最多 16 张参考图，可细粒度改图。
   默认 quality=high；标价按官方「一张参考图 + 1024×768 high」刊例。

@@ -15,6 +15,14 @@ mode: sync
 capability: chat
 enabled: true
 
+io:
+  input: [text]
+  output: [text]
+abilities:
+  playground: true
+  thinking: true
+  cache: true
+
 description: |
   通义千问 Turbo，同系列里更轻更快的文本型号，适合高并发、低成本日常对话；支持思考/非思考切换，思考模式输出另有官方单价。
 

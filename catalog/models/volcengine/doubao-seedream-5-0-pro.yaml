@@ -11,6 +11,13 @@ mode: sync
 capability: image.generate
 enabled: true
 
+io:
+  input: [text, image]
+  output: [image]
+abilities:
+  playground: true
+  reference: true
+
 description: |
   豆包 Seedream 5.0 Pro 旗舰生图。方舟图片生成 API 示例型号
   doubao-seedream-5-0-pro-260628。同步 POST /api/v3/images/generations。

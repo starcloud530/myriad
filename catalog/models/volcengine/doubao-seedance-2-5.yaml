@@ -15,6 +15,13 @@ mode: async
 capability: video.generate
 enabled: true
 
+io:
+  input: [text, image]
+  output: [video]
+abilities:
+  playground: true
+  reference: true
+
 description: |
   豆包 Seedance 2.5 主力视频生成。官方型号 doubao-seedance-2-5-260628，
   见方舟体验页（gen_video）与豆包产品定价表，仍在售。强调长叙事、强参考、

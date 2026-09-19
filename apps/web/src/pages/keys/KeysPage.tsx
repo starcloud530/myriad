@@ -8,7 +8,7 @@ import { PageHeader } from "../../components/biz/PageHeader.tsx";
 import { GhostButton } from "../../components/ui/GhostButton.tsx";
 import { IconButton } from "../../components/ui/IconButton.tsx";
 import { SolidButton } from "../../components/ui/SolidButton.tsx";
-import { isLocalOrigin, liveOrigin, PRODUCTION_ORIGIN } from "../../features/keys/origins.ts";
+import { publicBaseUrl } from "../../features/keys/origins.ts";
 import { forgetSecret, secretOf } from "../../features/keys/sessionSecrets.ts";
 import { displayKey, type ProductKey } from "../../features/keys/types.ts";
 import { useProductKeys } from "../../features/keys/useProductKeys.ts";
@@ -72,8 +72,7 @@ export function KeysPage(): ReactNode {
   const [form] = Form.useForm<KeyForm>();
   const [editForm] = Form.useForm<KeyForm>();
 
-  const origin = liveOrigin();
-  const local = isLocalOrigin(origin);
+  const baseUrl = publicBaseUrl();
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (!needle) {
@@ -128,9 +127,7 @@ export function KeysPage(): ReactNode {
           <p>{k.sectionHint}</p>
         </div>
         <div className="keys-endpoints">
-          <Endpoint label={k.sdkOrigin} url={origin} copyLabel={k.copyUrl} />
-          <Endpoint label={k.capabilityApi} url={`${origin}/v1/capabilities/:id`} copyLabel={k.copyUrl} />
-          {local ? <Endpoint label={k.production} url={PRODUCTION_ORIGIN} copyLabel={k.copyUrl} /> : null}
+          <Endpoint label={k.baseUrl} url={baseUrl} copyLabel={k.copyUrl} />
         </div>
         <div className="keys-toolbar">
           <input

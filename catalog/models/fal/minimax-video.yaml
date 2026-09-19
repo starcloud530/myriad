@@ -15,6 +15,12 @@ mode: async
 capability: video.generate
 enabled: false
 
+io:
+  input: [text]
+  output: [video]
+abilities:
+  playground: true
+
 description: |
   上一代 MiniMax Video 01。Hailuo-02 官方页标 Previous generation，已从默认目录拿掉。
   视频兜底改走 H3 Max Turbo。

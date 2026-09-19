@@ -12,6 +12,12 @@ mode: async
 capability: video.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [video]
+abilities:
+  playground: true
+
 description: |
   通义万相 2.7 文生视频。官方 GA 别名 wan2.7-t2v，有声、多镜头、声画同步；
   720P / 1080P，时长 2–15 秒。北京刊例 720P 0.6 / 1080P 1.0 元/秒。

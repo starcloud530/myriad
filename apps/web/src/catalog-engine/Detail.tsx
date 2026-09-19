@@ -1,25 +1,27 @@
+import { CopyOutlined } from "@ant-design/icons";
+import { message } from "antd";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { ErrorHint } from "../components/biz/ErrorHint.tsx";
-import { PageFrame } from "../components/biz/PageFrame.tsx";
 import { SpecChip } from "../components/ui/SpecChip.tsx";
 import { StatusDot } from "../components/ui/StatusDot.tsx";
+import { publicBaseUrl } from "../features/keys/origins.ts";
+import { TokenPicker } from "../features/keys/TokenPicker.tsx";
+import { useProductKeys } from "../features/keys/useProductKeys.ts";
 import type { Locale } from "../i18n/locale.ts";
 import type { Messages } from "../i18n/messages.ts";
 import { useLocale } from "../i18n/Locale.tsx";
 import { TryPlay } from "../features/invoke/TryPlay.tsx";
-import { TokenPicker } from "../features/keys/TokenPicker.tsx";
-import { useProductKeys } from "../features/keys/useProductKeys.ts";
-import { CapabilityApiDocs } from "./ApiDocs.tsx";
 import type { PublicCapability } from "../features/capability/types.ts";
 import { getCapability } from "../lib/api.ts";
-import { textSecondary } from "../tokens/theme.ts";
-import { contextLabel, shelfHealth } from "./health.ts";
-import { modelLabel, vendorLabel } from "./labels.ts";
+import { ApiAccess } from "./ApiAccess.tsx";
+import { requestPath } from "./api-spec.ts";
 import { formatMoney, type FxQuote } from "./fx.ts";
 import { usePriceText } from "./Fx.tsx";
-import { modeLabel, modalityLabel } from "./price.ts";
+import { shelfHealth } from "./health.ts";
+import { modelLabel } from "./labels.ts";
+import { abilityChips, heroChips, ioTypes, limitCells, toolChips } from "./sheet.ts";
 import type { ModelRecord } from "./spec.ts";
 import { VendorMark } from "./VendorMark.tsx";
 
@@ -29,8 +31,8 @@ function pricingRows(
   locale: Locale,
   fx: FxQuote,
   summary: (pricing: ModelRecord["pricing"]) => string,
-): Array<{ key: string; item: string; amount: string }> {
-  const rows: Array<{ key: string; item: string; amount: string }> = [];
+): Array<{ key: string; item: string; figure: string; unit: string }> {
+  const rows: Array<{ key: string; item: string; figure: string; unit: string }> = [];
   const { pricing } = model;
   const missing = copy.detail.missing;
   const money = (cny: number | null): string => (cny == null ? missing : formatMoney(cny, locale, fx));
@@ -38,54 +40,59 @@ function pricingRows(
     rows.push({
       key: "prompt",
       item: copy.detail.input,
-      amount: pricing.prompt.cny_per_million == null ? missing : `${money(pricing.prompt.cny_per_million)} / 1M token`,
+      figure: money(pricing.prompt.cny_per_million),
+      unit: copy.detail.perMillionUnit,
     });
   }
   if (pricing.completion) {
     rows.push({
       key: "completion",
       item: copy.detail.output,
-      amount: pricing.completion.cny_per_million == null ? missing : `${money(pricing.completion.cny_per_million)} / 1M token`,
+      figure: money(pricing.completion.cny_per_million),
+      unit: copy.detail.perMillionUnit,
     });
   }
   if (pricing.cache_read) {
     rows.push({
       key: "cache",
       item: copy.detail.cache,
-      amount: pricing.cache_read.cny_per_million == null ? missing : `${money(pricing.cache_read.cny_per_million)} / 1M token`,
+      figure: money(pricing.cache_read.cny_per_million),
+      unit: copy.detail.perMillionUnit,
     });
   }
   if (pricing.image) {
     rows.push({
       key: "image",
       item: copy.detail.perImage,
-      amount: pricing.image.cny_per_unit == null ? missing : `${money(pricing.image.cny_per_unit)} ${copy.labels.perImage}`,
+      figure: money(pricing.image.cny_per_unit),
+      unit: copy.labels.perImage,
     });
   }
   if (pricing.second) {
     rows.push({
       key: "second",
       item: pricing.unit === "audio_second" ? copy.detail.perAudio : copy.detail.perVideo,
-      amount:
-        pricing.second.cny_per_unit == null
-          ? missing
-          : `${money(pricing.second.cny_per_unit)} / ${pricing.unit === "audio_second" ? copy.labels.audioSec : copy.labels.videoSec}`,
+      figure: money(pricing.second.cny_per_unit),
+      unit: `/ ${pricing.unit === "audio_second" ? copy.labels.audioSec : copy.labels.videoSec}`,
     });
   }
   if (rows.length === 0) {
-    rows.push({ key: "unit", item: copy.detail.unit, amount: summary(pricing) });
+    rows.push({ key: "unit", item: copy.detail.unit, figure: summary(pricing), unit: "" });
   }
   return rows;
 }
 
-type DetailTab = "try" | "api" | "about" | "pricing";
+function jumpTo(id: string): void {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
   const { locale, copy } = useLocale();
   const { fx, summary, note } = usePriceText();
   const { keys, selectedId, secret, setSelectedId, captureSecret } = useProductKeys();
+  const [params, setParams] = useSearchParams();
+  const connect = params.get("connect") === "1";
   const apiKey = secret;
-  const [tab, setTab] = useState<DetailTab>("try");
   const [capability, setCapability] = useState<PublicCapability | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -117,79 +124,197 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
   }, [apiKey, model.capability]);
 
   const health = shelfHealth(model, copy, capability, locale);
-  const context = contextLabel(model, copy);
-  const modalities = modalityLabel(copy);
-  const modes = modeLabel(copy);
   const prices = pricingRows(model, copy, locale, fx, summary);
-  const specs: Array<{ label: string; value: string }> = [
-    { label: copy.detail.vendor, value: vendorLabel(model.vendor, locale) },
-    { label: copy.detail.id, value: model.id },
-    { label: copy.detail.upstream, value: model.vendor_model },
-    { label: copy.detail.protocol, value: model.kind },
-    { label: copy.detail.capability, value: model.capability },
-  ];
-  if (context) {
-    specs.push({ label: copy.detail.context, value: context });
+  const io = ioTypes(model, copy);
+  const chips = heroChips(model, copy);
+  const abilities = abilityChips(model, copy);
+  const tools = toolChips(model, copy);
+  const limits = limitCells(model, copy);
+  const modelId = model.vendor_model || model.id;
+  const path = requestPath(model.capability);
+  const baseUrl = publicBaseUrl();
+  const toc: Array<{ id: string; label: string }> = [{ id: "overview", label: copy.detail.describe }];
+  if (abilities.length) {
+    toc.push({ id: "features", label: copy.detail.abilities });
   }
-  if (health.channels) {
-    specs.push({ label: copy.labels.live, value: health.channels });
+  if (tools.length) {
+    toc.push({ id: "tools", label: copy.detail.tools });
   }
+  toc.push({ id: "pricing", label: copy.detail.pricing });
+  if (limits.length) {
+    toc.push({ id: "limits", label: copy.detail.limits });
+  }
+  toc.push({ id: "api", label: copy.detail.apiScope });
 
-  const tabs: Array<{ id: DetailTab; label: string }> = [
-    { id: "try", label: copy.detail.try },
-    { id: "api", label: copy.detail.api },
-    { id: "about", label: copy.detail.about },
-    { id: "pricing", label: copy.detail.pricing },
-  ];
+  const copyModelId = (): void => {
+    void navigator.clipboard.writeText(modelId).then(() => {
+      void message.success(copy.keys.copied);
+    });
+  };
+
+  const openConnect = (): void => {
+    const next = new URLSearchParams(params);
+    next.set("connect", "1");
+    setParams(next, { replace: false });
+  };
+
+  const closeConnect = (): void => {
+    const next = new URLSearchParams(params);
+    next.delete("connect");
+    setParams(next, { replace: true });
+  };
 
   return (
-    <PageFrame fill>
-      <div className="bench-head">
-        <Link to="/playground" className="bench-crumb">
-          {copy.play.breadcrumb}
-        </Link>
-        <span className="bench-crumb-rule">/</span>
-        <span>{modelLabel(model, locale)}</span>
-      </div>
-      <header className="bench-title">
-        <VendorMark vendor={model.vendor} size={44} />
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-            <h1 style={{ margin: 0, fontSize: 28, fontWeight: 680, letterSpacing: "-0.03em" }}>{modelLabel(model, locale)}</h1>
-            <StatusDot live={health.status === "live"} label={health.label} />
+    <>
+      <div className="studio">
+        <div className="studio-bar">
+          <div className="bench-head">
+            <Link to="/playground" className="bench-crumb">
+              {copy.play.breadcrumb}
+            </Link>
+            <span className="bench-crumb-rule">/</span>
+            <span>{modelLabel(model, locale)}</span>
           </div>
-          <div style={{ color: textSecondary, fontSize: 13, marginTop: 4 }}>
-            {vendorLabel(model.vendor, locale)} · {model.vendor_model}
-            {health.channels ? ` · ${health.channels}` : ""}
-          </div>
+          <button type="button" className="btn-ghost" onClick={openConnect}>
+            {copy.detail.connect}
+          </button>
         </div>
-        <div className="bench-chips">
-          <SpecChip>{modalities[model.modality]}</SpecChip>
-          <SpecChip>{modes[model.mode]}</SpecChip>
-          <SpecChip>{summary(model.pricing)}</SpecChip>
-          {context ? <SpecChip>{context}</SpecChip> : null}
-        </div>
-      </header>
-      <div className="bench">
-        <div className="bench-tabs" role="tablist">
-          {tabs.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              aria-selected={tab === item.id}
-              className={tab === item.id ? "bench-tab is-on" : "bench-tab"}
-              onClick={() => {
-                setTab(item.id);
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <div className="bench-panel" role="tabpanel">
-          {tab === "try" ? (
-            <div className="pane pane-fill">
+        <div className="studio-body">
+          <nav className="studio-toc" aria-label={copy.detail.toc}>
+            <div className="studio-toc-kicker">{copy.detail.toc}</div>
+            {toc.map((item) => (
+              <button key={item.id} type="button" className="studio-toc-link" onClick={() => jumpTo(item.id)}>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <article className="studio-doc">
+            <header id="overview" className="sheet-hero">
+              <div className="studio-title">
+                <VendorMark vendor={model.vendor} size={40} />
+                <div>
+                  <h1>{modelLabel(model, locale)}</h1>
+                  <div className="studio-idline">
+                    <StatusDot live={health.status === "live"} label={health.label} />
+                    <button type="button" className="bench-id" onClick={copyModelId} title={copy.detail.copyId}>
+                      {copy.detail.modelId}: {modelId}
+                      <CopyOutlined />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p className="sheet-lead">{model.description || copy.detail.noAbout}</p>
+              {chips.length ? (
+                <div className="bench-chips">
+                  {chips.map((chip) => (
+                    <SpecChip key={chip}>{chip}</SpecChip>
+                  ))}
+                </div>
+              ) : null}
+              <div className="identity-stats">
+                <div className="identity-stat">
+                  <h3>{copy.detail.priceCard}</h3>
+                  <div className="identity-prices">
+                    {prices.slice(0, 2).map((row) => (
+                      <div key={row.key}>
+                        <span>{row.item}</span>
+                        <strong>{row.figure}</strong>
+                      </div>
+                    ))}
+                  </div>
+                  <p>{prices[0]?.unit || copy.detail.perMillionUnit}</p>
+                </div>
+                <div className="identity-stat">
+                  <h3>{copy.detail.ioTypes}</h3>
+                  <p className="identity-io">
+                    {io.input}
+                    <span> | </span>
+                    {io.output}
+                  </p>
+                </div>
+              </div>
+            </header>
+            {abilities.length ? (
+              <section id="features" className="sheet-block">
+                <h2>{copy.detail.abilities}</h2>
+                <ul className="ability-grid">
+                  {abilities.map((item) => (
+                    <li key={item.key} className={item.on ? "is-on" : undefined}>
+                      <i />
+                      <span>{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+            {tools.length ? (
+              <section id="tools" className="sheet-block">
+                <h2>{copy.detail.tools}</h2>
+                <ul className="ability-grid">
+                  {tools.map((item) => (
+                    <li key={item.key} className={item.on ? "is-on" : undefined}>
+                      <i />
+                      <span>{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+            <section id="pricing" className="sheet-block">
+              <h2>{copy.detail.pricing}</h2>
+              <p className="sheet-note">
+                {model.pricing.source === "estimate" ? copy.detail.estimate : copy.detail.list}
+                {model.pricing.as_of ? ` · ${model.pricing.as_of}` : ""}
+                {` · ${note}`}
+              </p>
+              <div className="price-grid">
+                {prices.map((row) => (
+                  <div key={row.key} className="price-tile">
+                    <div className="price-item">{row.item}</div>
+                    <div className="price-amount">{row.figure}</div>
+                    {row.unit ? <div className="price-unit">{row.unit}</div> : null}
+                  </div>
+                ))}
+              </div>
+            </section>
+            {limits.length ? (
+              <section id="limits" className="sheet-block">
+                <h2>{copy.detail.limits}</h2>
+                <dl className="limit-grid">
+                  {limits.map((item) => (
+                    <div key={item.key} className="limit-cell">
+                      <dt>{item.label}</dt>
+                      <dd>{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            ) : null}
+            <section id="api" className="sheet-block">
+              <h2>{copy.detail.apiScope}</h2>
+              <ul className="api-scope">
+                <li>
+                  <span>{copy.detail.baseUrl}</span>
+                  <code>{baseUrl}</code>
+                </li>
+                <li>
+                  <span>{copy.detail.frequency}</span>
+                  <code>POST {path}</code>
+                </li>
+              </ul>
+              {model.docs ? (
+                <a className="about-link" href={model.docs} target="_blank" rel="noreferrer">
+                  {copy.detail.viewDocs}
+                </a>
+              ) : null}
+            </section>
+          </article>
+          <aside className="studio-app">
+            <header className="gradio-head">
+              <h2>{copy.detail.tryApp}</h2>
+              <StatusDot live={health.status === "live"} label={health.label} />
+            </header>
+            <div className="gradio-key">
               <TokenPicker
                 keys={keys}
                 value={selectedId}
@@ -197,59 +322,15 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
                 onChange={setSelectedId}
                 onSecret={captureSecret}
               />
-              {!loading && !capability ? <ErrorHint message={error || copy.detail.unavailable} /> : null}
+            </div>
+            {!loading && !capability ? <ErrorHint message={error || copy.detail.unavailable} /> : null}
+            <div className="gradio-stage">
               <TryPlay apiKey={apiKey} model={model} />
             </div>
-          ) : null}
-          {tab === "api" ? <CapabilityApiDocs model={model} capability={capability} /> : null}
-          {tab === "about" ? (
-            <div className="about-split">
-              <article className="pane pane-fill">
-                <div className="pane-kicker">{copy.detail.about}</div>
-                <p className="about-body">{model.description || copy.detail.noAbout}</p>
-                {model.docs ? (
-                  <a className="about-link" href={model.docs} target="_blank" rel="noreferrer">
-                    {model.docs}
-                  </a>
-                ) : null}
-              </article>
-              <div className="spec-grid">
-                {specs.map((item) => (
-                  <div key={item.label} className="spec-cell">
-                    <div className="pane-kicker">{item.label}</div>
-                    <div className="spec-value">{item.value}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-          {tab === "pricing" ? (
-            <div className="pane" style={{ display: "grid", gap: 16 }}>
-              <div className="pane-kicker">
-                {model.pricing.source === "estimate" ? copy.detail.estimate : copy.detail.list}
-                {model.pricing.as_of ? ` · ${model.pricing.as_of}` : ""}
-                {` · ${note}`}
-              </div>
-              <div className="price-grid">
-                {prices.map((row) => (
-                  <div key={row.key} className="price-tile">
-                    <div className="pane-kicker">{row.item}</div>
-                    <div className="price-amount">{row.amount}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="price-table">
-                {prices.map((row) => (
-                  <div key={`row-${row.key}`} className="price-row">
-                    <span>{row.item}</span>
-                    <span>{row.amount}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
+          </aside>
         </div>
       </div>
-    </PageFrame>
+      <ApiAccess model={model} open={connect} onClose={closeConnect} />
+    </>
   );
 }

@@ -12,6 +12,12 @@ mode: async
 capability: video.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [video]
+abilities:
+  playground: true
+
 description: |
   fal 官方 H3 Max Turbo 文生视频。endpoint 为 minimax/h3-max-turbo/text-to-video。
   MiniMax H3 的 fal 后训练速度档，必填 prompt_expansion_mode（默认 balanced）。

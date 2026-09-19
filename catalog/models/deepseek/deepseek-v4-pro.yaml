@@ -15,6 +15,14 @@ mode: sync
 capability: chat
 enabled: true
 
+io:
+  input: [text]
+  output: [text]
+abilities:
+  playground: true
+  thinking: true
+  cache: true
+
 description: |
   DeepSeek-V4-Pro-0813，官方仍在售的 Pro 对话型号，支持思考/非思考切换，上下文 1M。
 

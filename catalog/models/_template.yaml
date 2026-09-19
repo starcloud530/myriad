@@ -16,8 +16,25 @@ mode: sync
 capability: chat
 enabled: true
 
+# 身份条「输入 | 输出」只读这里，不要让页面从 kind 猜。
+io:
+  input: [text]
+  output: [text]
+
+# 产品能力。闭集，只写确认过的键；true 亮、false 灰。没写的键页面不画。
+# playground | thinking | structured_output | cache | batch | vision | reference | fine_tune
+abilities:
+  playground: true
+  thinking: false
+  cache: false
+
+# 工具。同样只写确认过的。没写整段则不画「模型工具」。
+# function_call | web_search | mcp | knowledge
+# tools:
+#   function_call: false
+
 description: |
-  一句话介绍。给广场「介绍」页用。
+  一句话介绍。给广场首屏用。
 
 docs: https://api-docs.deepseek.com
 
@@ -26,9 +43,13 @@ lineage:
   origin: deepseek
   origin_model: deepseek-chat
 
+# 限制格只渲染有数字的键。没有的键删掉，不要填假数。
 specs:
   context_length: 65536
-  # 没有的键删掉，不要填假数
+  # max_input:
+  # max_output:
+  # tpm:
+  # rpm:
 
 # 对外标价快照，不是进货账、不是密钥。数字先空着就写 null，不要删掉整段。
 pricing:

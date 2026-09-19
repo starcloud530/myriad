@@ -15,6 +15,14 @@ mode: sync
 capability: chat
 enabled: true
 
+io:
+  input: [text]
+  output: [text]
+abilities:
+  playground: true
+  thinking: true
+  cache: true
+
 description: |
   通义千问 3 Max，当前千问 3 系列旗舰文本型号，支持思考/非思考切换；中国内地实时推理按输入长度阶梯计价。
 

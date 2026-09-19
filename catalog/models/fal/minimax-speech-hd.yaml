@@ -15,6 +15,12 @@ mode: sync
 capability: audio.speech
 enabled: true
 
+io:
+  input: [text]
+  output: [audio]
+abilities:
+  playground: true
+
 description: |
   MiniMax Speech 2.8 HD，经 fal 上架的高品质 TTS，与 Turbo 同代、音质更高。
   官方按每 1000 字符 $0.10 计价，无法直接落到 audio_second。

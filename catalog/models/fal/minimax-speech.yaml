@@ -15,6 +15,12 @@ mode: sync
 capability: audio.speech
 enabled: true
 
+io:
+  input: [text]
+  output: [audio]
+abilities:
+  playground: true
+
 description: |
   MiniMax Speech 2.8 Turbo 文本转语音，经 fal 上架。支持多音色、停顿标记与语气标签。
   官方按每 1000 字符 $0.06 计价，无法直接落到 audio_second。

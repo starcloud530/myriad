@@ -7,7 +7,7 @@ export { FxProvider, useFx, usePriceText } from "./Fx.tsx";
 export { formatMoney, type FxQuote } from "./fx.ts";
 export { modeLabel, modalityLabel, priceSummary } from "./price.ts";
 export { ModelShelf } from "./Shelf.tsx";
-export { modelHref, modelKey } from "./spec.ts";
+export { modelHref, modelKey, modelTryHref } from "./spec.ts";
 export type { ModelRecord } from "./spec.ts";
 export { VendorMark } from "./VendorMark.tsx";
 export { groupByVendor, vendorMeta, vendorOrder } from "./vendors.ts";

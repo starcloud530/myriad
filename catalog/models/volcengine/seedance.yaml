@@ -15,6 +15,12 @@ mode: async
 capability: video.generate
 enabled: false
 
+io:
+  input: [text]
+  output: [video]
+abilities:
+  playground: true
+
 description: |
   已下架占位卡。官方没有 doubao-seedance 这个预置 ID。
   广场请用 doubao-seedance-2-5 / doubao-seedance-2-0。网关主路已改 2.5。

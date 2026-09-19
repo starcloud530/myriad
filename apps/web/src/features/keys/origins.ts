@@ -5,11 +5,7 @@ export function liveOrigin(): string {
   return window.location.origin.replace(/\/+$/, "");
 }
 
-export function isLocalOrigin(origin: string): boolean {
-  try {
-    const host = new URL(origin).hostname;
-    return host === "localhost" || host === "127.0.0.1";
-  } catch {
-    return false;
-  }
+/** 电台地址。频段（能力路径）由调用方自己接。 */
+export function publicBaseUrl(): string {
+  return `${liveOrigin()}/v1`;
 }

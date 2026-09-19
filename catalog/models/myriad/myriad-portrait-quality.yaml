@@ -15,6 +15,12 @@ mode: sync
 capability: portrait-quality
 enabled: true
 
+io:
+  input: [image]
+  output: [text]
+abilities:
+  playground: true
+
 description: |
   万象自建，第一期先走接线。人像质量回归打分，随后替换为自有模型服务。
 

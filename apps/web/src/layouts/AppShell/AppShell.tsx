@@ -79,7 +79,7 @@ export function AppShell(): ReactNode {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { copy } = useLocale();
-  const playHome = location.pathname === "/playground";
+  const playFill = location.pathname.startsWith("/playground");
 
   useEffect(() => {
     document.title = copy.brand;
@@ -111,8 +111,11 @@ export function AppShell(): ReactNode {
           <div
             style={{
               flex: 1,
-              overflow: playHome ? "hidden" : "auto",
-              padding: playHome ? 0 : "32px 36px 64px",
+              overflow: playFill ? "hidden" : "auto",
+              padding: playFill ? 0 : "32px 36px 64px",
+              display: playFill ? "flex" : undefined,
+              flexDirection: playFill ? "column" : undefined,
+              minHeight: 0,
             }}
           >
             <Outlet />

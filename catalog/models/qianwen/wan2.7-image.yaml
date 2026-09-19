@@ -11,6 +11,12 @@ mode: sync
 capability: image.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [image]
+abilities:
+  playground: true
+
 description: |
   通义万相 2.7 生图量产档。与 Pro 同协议，更快更便宜，最高 2K，无 4K。
   北京刊例 0.20 元/张。不走 /chat/completions。

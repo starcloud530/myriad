@@ -15,6 +15,12 @@ mode: sync
 capability: chat
 enabled: true
 
+io:
+  input: [text]
+  output: [text]
+abilities:
+  playground: true
+
 description: |
   通义千问 Long，面向超长上下文的文本型号，官方上下文 1000 万 tokens，适合长文档分析、摘要与抽取。
 

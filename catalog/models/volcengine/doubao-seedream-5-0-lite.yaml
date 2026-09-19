@@ -11,6 +11,12 @@ mode: sync
 capability: image.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [image]
+abilities:
+  playground: true
+
 description: |
   豆包 Seedream 5.0 Lite。官方预置型号 doubao-seedream-5-0-260128，
   同步走 /api/v3/images/generations，支持组图。产品页刊例 0.22 元/张。

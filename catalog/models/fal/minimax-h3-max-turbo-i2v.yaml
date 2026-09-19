@@ -11,6 +11,13 @@ mode: async
 capability: video.generate
 enabled: true
 
+io:
+  input: [image]
+  output: [video]
+abilities:
+  playground: true
+  reference: true
+
 description: |
   fal 官方 H3 Max Turbo 图生视频。endpoint 为 minimax/h3-max-turbo/image-to-video。
   可选首帧 / 尾帧，时长 5–15 秒，480p / 768p。与文生视频同价档。

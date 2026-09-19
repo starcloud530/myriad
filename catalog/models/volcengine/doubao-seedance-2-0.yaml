@@ -15,6 +15,12 @@ mode: async
 capability: video.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [video]
+abilities:
+  playground: true
+
 description: |
   豆包 Seedance 2.0 主力视频生成。官方预置型号 doubao-seedance-2-0-260128，
   见火山方舟模型广场与创建视频生成任务文档。支持 480P / 720P / 1080P / 4K。

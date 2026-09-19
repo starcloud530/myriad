@@ -11,6 +11,12 @@ mode: sync
 capability: image.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [image]
+abilities:
+  playground: true
+
 description: |
   阿里云百炼当前推荐的千问生图旗舰。官方选型页写明擅长文本渲染，
   能生成贴合物理材质的中英文，适合图表、海报、PPT。同步调用；

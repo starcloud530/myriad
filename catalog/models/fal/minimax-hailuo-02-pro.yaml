@@ -15,6 +15,12 @@ mode: async
 capability: video.generate
 enabled: true
 
+io:
+  input: [text]
+  output: [video]
+abilities:
+  playground: true
+
 description: |
   MiniMax Hailuo 02 Pro 文生视频，经 fal 上架的当前主推 1080p 型号，Video 01 后继。
   官方按秒计价 $0.08/秒（6 秒约 $0.48）。
