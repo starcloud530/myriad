@@ -1,6 +1,14 @@
 import { MyriadError } from "../domain/errors.ts";
 import { ProtocolError } from "../protocol/envelope.ts";
 
+export function redirect(location: string, cookies: string[] = []): Response {
+  const headers = new Headers({ location });
+  for (const item of cookies) {
+    headers.append("Set-Cookie", item);
+  }
+  return new Response(null, { status: 302, headers });
+}
+
 export function json(data: unknown, status = 200, requestId?: string): Response {
   const headers = new Headers({
     "content-type": "application/json; charset=utf-8",

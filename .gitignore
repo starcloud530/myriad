@@ -5,6 +5,7 @@ apps/*/dist
 packages/*/.wrangler
 .dev.vars
 .env
+第三方登录/
 .env.*
 !.env.example
 *.log

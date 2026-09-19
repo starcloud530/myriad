@@ -6,5 +6,11 @@ export interface Env {
   FAL_API_KEY?: string;
   VOLCENGINE_API_KEY?: string;
   KEY_PEPPER?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  GITHUB_CLIENT_ID?: string;
+  GITHUB_CLIENT_SECRET?: string;
+  AUTH_PUBLIC_ORIGIN?: string;
   MYRIAD_KEYS?: KVNamespace;
+  MYRIAD_LEDGER?: D1Database;
 }
