@@ -118,7 +118,7 @@ for (const [path, text] of Object.entries(rawModules)) {
     continue;
   }
   const model = parseModel(parse(text));
-  if (model) {
+  if (model?.enabled) {
     loaded.push(model);
   }
 }

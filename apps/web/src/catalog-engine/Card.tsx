@@ -5,7 +5,8 @@ import { useLocale } from "../i18n/Locale.tsx";
 import { StatusDot } from "../components/ui/StatusDot.tsx";
 import { borderColor, textSecondary } from "../tokens/theme.ts";
 import { contextLabel, shelfHealth, unitLabel } from "./health.ts";
-import { modeLabel, modalityLabel, priceSummary } from "./price.ts";
+import { usePriceText } from "./Fx.tsx";
+import { modeLabel, modalityLabel } from "./price.ts";
 import { modelHref } from "./spec.ts";
 import type { ModelRecord } from "./spec.ts";
 import { modelLabel, vendorLabel } from "./labels.ts";
@@ -19,6 +20,7 @@ export function ModelCard({
   capability?: PublicCapability | null;
 }): ReactNode {
   const { locale, copy } = useLocale();
+  const { summary } = usePriceText();
   const health = shelfHealth(model, copy, capability, locale);
   const context = contextLabel(model, copy);
   const on = health.status === "live";
@@ -39,7 +41,7 @@ export function ModelCard({
         <div style={{ color: textSecondary, fontSize: 12, marginTop: 5 }}>{model.vendor_model}</div>
       </div>
       <div style={{ fontSize: 16, fontWeight: 680, letterSpacing: "-0.02em", lineHeight: 1.4 }}>
-        {priceSummary(model.pricing, copy)}
+        {summary(model.pricing)}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, color: textSecondary, fontSize: 12 }}>
         <span>{modalities[model.modality]}</span>

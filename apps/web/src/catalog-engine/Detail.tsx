@@ -5,6 +5,7 @@ import { ErrorHint } from "../components/biz/ErrorHint.tsx";
 import { PageFrame } from "../components/biz/PageFrame.tsx";
 import { SpecChip } from "../components/ui/SpecChip.tsx";
 import { StatusDot } from "../components/ui/StatusDot.tsx";
+import type { Locale } from "../i18n/locale.ts";
 import type { Messages } from "../i18n/messages.ts";
 import { useLocale } from "../i18n/Locale.tsx";
 import { TryPlay } from "../features/invoke/TryPlay.tsx";
@@ -16,51 +17,63 @@ import { getCapability } from "../lib/api.ts";
 import { textSecondary } from "../tokens/theme.ts";
 import { contextLabel, shelfHealth } from "./health.ts";
 import { modelLabel, vendorLabel } from "./labels.ts";
-import { modeLabel, modalityLabel, priceSummary } from "./price.ts";
+import { formatMoney, type FxQuote } from "./fx.ts";
+import { usePriceText } from "./Fx.tsx";
+import { modeLabel, modalityLabel } from "./price.ts";
 import type { ModelRecord } from "./spec.ts";
 import { VendorMark } from "./VendorMark.tsx";
 
-function pricingRows(model: ModelRecord, copy: Messages): Array<{ key: string; item: string; amount: string }> {
+function pricingRows(
+  model: ModelRecord,
+  copy: Messages,
+  locale: Locale,
+  fx: FxQuote,
+  summary: (pricing: ModelRecord["pricing"]) => string,
+): Array<{ key: string; item: string; amount: string }> {
   const rows: Array<{ key: string; item: string; amount: string }> = [];
   const { pricing } = model;
   const missing = copy.detail.missing;
+  const money = (cny: number | null): string => (cny == null ? missing : formatMoney(cny, locale, fx));
   if (pricing.prompt) {
     rows.push({
       key: "prompt",
       item: copy.detail.input,
-      amount: pricing.prompt.cny_per_million == null ? missing : `¥${pricing.prompt.cny_per_million} / 1M token`,
+      amount: pricing.prompt.cny_per_million == null ? missing : `${money(pricing.prompt.cny_per_million)} / 1M token`,
     });
   }
   if (pricing.completion) {
     rows.push({
       key: "completion",
       item: copy.detail.output,
-      amount: pricing.completion.cny_per_million == null ? missing : `¥${pricing.completion.cny_per_million} / 1M token`,
+      amount: pricing.completion.cny_per_million == null ? missing : `${money(pricing.completion.cny_per_million)} / 1M token`,
     });
   }
   if (pricing.cache_read) {
     rows.push({
       key: "cache",
       item: copy.detail.cache,
-      amount: pricing.cache_read.cny_per_million == null ? missing : `¥${pricing.cache_read.cny_per_million} / 1M token`,
+      amount: pricing.cache_read.cny_per_million == null ? missing : `${money(pricing.cache_read.cny_per_million)} / 1M token`,
     });
   }
   if (pricing.image) {
     rows.push({
       key: "image",
       item: copy.detail.perImage,
-      amount: pricing.image.cny_per_unit == null ? missing : `¥${pricing.image.cny_per_unit} ${copy.labels.perImage}`,
+      amount: pricing.image.cny_per_unit == null ? missing : `${money(pricing.image.cny_per_unit)} ${copy.labels.perImage}`,
     });
   }
   if (pricing.second) {
     rows.push({
       key: "second",
       item: pricing.unit === "audio_second" ? copy.detail.perAudio : copy.detail.perVideo,
-      amount: pricing.second.cny_per_unit == null ? missing : `¥${pricing.second.cny_per_unit} / ${pricing.unit === "audio_second" ? copy.labels.audioSec : copy.labels.videoSec}`,
+      amount:
+        pricing.second.cny_per_unit == null
+          ? missing
+          : `${money(pricing.second.cny_per_unit)} / ${pricing.unit === "audio_second" ? copy.labels.audioSec : copy.labels.videoSec}`,
     });
   }
   if (rows.length === 0) {
-    rows.push({ key: "unit", item: copy.detail.unit, amount: priceSummary(pricing, copy) });
+    rows.push({ key: "unit", item: copy.detail.unit, amount: summary(pricing) });
   }
   return rows;
 }
@@ -69,6 +82,7 @@ type DetailTab = "try" | "api" | "about" | "pricing";
 
 export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
   const { locale, copy } = useLocale();
+  const { fx, summary, note } = usePriceText();
   const { keys, selectedId, secret, setSelectedId, captureSecret } = useProductKeys();
   const apiKey = secret;
   const [tab, setTab] = useState<DetailTab>("try");
@@ -106,7 +120,7 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
   const context = contextLabel(model, copy);
   const modalities = modalityLabel(copy);
   const modes = modeLabel(copy);
-  const prices = pricingRows(model, copy);
+  const prices = pricingRows(model, copy, locale, fx, summary);
   const specs: Array<{ label: string; value: string }> = [
     { label: copy.detail.vendor, value: vendorLabel(model.vendor, locale) },
     { label: copy.detail.id, value: model.id },
@@ -152,7 +166,7 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
         <div className="bench-chips">
           <SpecChip>{modalities[model.modality]}</SpecChip>
           <SpecChip>{modes[model.mode]}</SpecChip>
-          <SpecChip>{priceSummary(model.pricing, copy)}</SpecChip>
+          <SpecChip>{summary(model.pricing)}</SpecChip>
           {context ? <SpecChip>{context}</SpecChip> : null}
         </div>
       </header>
@@ -214,6 +228,7 @@ export function ModelDetail({ model }: { model: ModelRecord }): ReactNode {
               <div className="pane-kicker">
                 {model.pricing.source === "estimate" ? copy.detail.estimate : copy.detail.list}
                 {model.pricing.as_of ? ` · ${model.pricing.as_of}` : ""}
+                {` · ${note}`}
               </div>
               <div className="price-grid">
                 {prices.map((row) => (

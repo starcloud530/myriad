@@ -44,31 +44,9 @@
   opacity: 0.5;
 }
 
-.shelf-find {
+.shelf-toolbar .find-line {
   flex: 1 1 160px;
   min-width: 140px;
-  max-width: 280px;
-  height: 28px;
-  margin: 0;
-  padding: 0 0 6px;
-  border: 0;
-  border-bottom: 1px solid #2a2a2a;
-  border-radius: 0;
-  background: transparent;
-  color: #fff;
-  font: inherit;
-  font-size: 13px;
-  outline: none;
-  box-shadow: none;
-}
-
-.shelf-find::placeholder {
-  color: #6b7280;
-}
-
-.shelf-find:hover,
-.shelf-find:focus {
-  border-bottom-color: #fff;
 }
 
 .shelf-layouts {
@@ -130,6 +108,85 @@
   margin-top: 2px;
   font-size: 12px;
   color: #9ca3af;
+}
+
+.shelf-vendor-rail {
+  display: grid;
+  gap: 12px;
+}
+
+.shelf-vendor-card {
+  display: grid;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 18px 20px 16px;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  color: #fff;
+}
+
+.shelf-vendor-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shelf-vendor-title {
+  min-width: 0;
+}
+
+.shelf-vendor-card h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 680;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+
+.shelf-vendor-card p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.shelf-vendor-models {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px 14px;
+  margin: 0;
+  padding: 14px 0 0;
+  border-top: 1px solid #2a2a2a;
+  list-style: none;
+}
+
+.shelf-vendor-models a {
+  display: grid;
+  gap: 3px;
+  color: #e5e7eb;
+  text-decoration: none;
+}
+
+.shelf-vendor-models a strong {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.shelf-vendor-models a span {
+  font-size: 11px;
+  color: #9ca3af;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shelf-vendor-models a:hover {
+  color: #fff;
+}
+
+.shelf-vendor-models a:hover span {
+  color: #d1d5db;
 }
 
 .shelf-card {

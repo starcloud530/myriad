@@ -3,17 +3,15 @@ import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { PageFrame } from "../components/biz/PageFrame.tsx";
 import { PageHeader } from "../components/biz/PageHeader.tsx";
-import { MeterStrip } from "../components/viz/MeterStrip.tsx";
 import { useCatalog } from "../features/capability/useCatalog.ts";
 import { useLocale } from "../i18n/Locale.tsx";
-import { getDevApiKey } from "../lib/devKey.ts";
 import { ModelCard } from "./Card.tsx";
-import { shelfHealth } from "./health.ts";
 import { vendorLabel } from "./labels.ts";
 import { filterModels, listModels } from "./load.ts";
 import { modalityLabel } from "./price.ts";
 import type { ModelRecord } from "./spec.ts";
 import { modelKey } from "./spec.ts";
+import { VendorCard } from "./VendorCard.tsx";
 import { VendorMark } from "./VendorMark.tsx";
 import { groupByVendor } from "./vendors.ts";
 import "./shelf.css";
@@ -32,7 +30,7 @@ export function ModelShelf({
 }): ReactNode {
   const { locale, copy } = useLocale();
   const all = useMemo(() => listModels(), []);
-  const { capabilities } = useCatalog(getDevApiKey());
+  const { capabilities } = useCatalog();
   const byId = useMemo(() => new Map(capabilities.map((item) => [item.id, item])), [capabilities]);
   const [query, setQuery] = useState("");
   const [modality, setModality] = useState<ModalityFilter>("all");
@@ -41,8 +39,6 @@ export function ModelShelf({
 
   const visible = useMemo(() => filterModels(all, query, modality), [all, modality, query]);
   const vendorGroups = useMemo(() => groupByVendor(visible), [visible]);
-  const liveCount = all.filter((model) => shelfHealth(model, copy, byId.get(model.capability), locale).status === "live").length;
-  const vendorCount = new Set(all.map((model) => model.vendor)).size;
   const filters: Array<{ label: string; value: ModalityFilter; count: number }> = [
     { label: copy.shelf.all, value: "all", count: all.length },
     { label: modalities.text, value: "text", count: all.filter((item) => item.modality === "text").length },
@@ -54,13 +50,6 @@ export function ModelShelf({
   return (
     <PageFrame>
       <PageHeader eyebrow={eyebrow} title={title} description={intro} />
-      <MeterStrip
-        items={[
-          { label: copy.shelf.models, value: String(all.length) },
-          { label: copy.shelf.vendors, value: String(vendorCount) },
-          { label: copy.shelf.live, value: String(liveCount) },
-        ]}
-      />
       <div className="shelf-toolbar">
         <div className="shelf-facets">
           {filters.map((item) => (
@@ -80,7 +69,7 @@ export function ModelShelf({
         </div>
         <input
           type="search"
-          className="shelf-find"
+          className="find-line"
           placeholder={copy.shelf.search}
           value={query}
           onChange={(event) => {
@@ -109,12 +98,6 @@ export function ModelShelf({
       {visible.length === 0 ? (
         <Empty description={all.length === 0 ? copy.shelf.empty : copy.shelf.none} />
       ) : layout === "model" ? (
-        <section className="shelf-grid">
-          {visible.map((model) => (
-            <ModelCard key={modelKey(model)} model={model} capability={byId.get(model.capability)} />
-          ))}
-        </section>
-      ) : (
         <div className="shelf-groups">
           {vendorGroups.map((group) => (
             <section key={group.vendor} className="shelf-group">
@@ -131,6 +114,17 @@ export function ModelShelf({
                 ))}
               </div>
             </section>
+          ))}
+        </div>
+      ) : (
+        <div className="shelf-vendor-rail">
+          {vendorGroups.map((group) => (
+            <VendorCard
+              key={group.vendor}
+              vendor={group.vendor}
+              items={group.items}
+              capabilities={byId}
+            />
           ))}
         </div>
       )}

@@ -3,6 +3,8 @@ export { ModelCard } from "./Card.tsx";
 export { ModelDetail } from "./Detail.tsx";
 export { contextLabel, shelfHealth } from "./health.ts";
 export { filterModels, getModel, listModels } from "./load.ts";
+export { FxProvider, useFx, usePriceText } from "./Fx.tsx";
+export { formatMoney, type FxQuote } from "./fx.ts";
 export { modeLabel, modalityLabel, priceSummary } from "./price.ts";
 export { ModelShelf } from "./Shelf.tsx";
 export { modelHref, modelKey } from "./spec.ts";
