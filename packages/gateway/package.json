@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev --port 8791",
-    "deploy": "wrangler deploy",
+    "deploy": "npm run build -w @myriad/web && wrangler deploy --config wrangler.deploy.toml",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

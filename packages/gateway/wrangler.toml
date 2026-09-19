@@ -4,8 +4,16 @@ compatibility_date = "2026-09-12"
 
 [vars]
 MYRIAD_ENV = "dev"
+AUTH_PUBLIC_ORIGIN = "http://127.0.0.1:18081"
 
 # 本地签发的产品密钥。部署时换成真实 namespace id。
 [[kv_namespaces]]
 binding = "MYRIAD_KEYS"
-id = "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+id = "d5045f56ebe34e509038ed8fccb7048c"
+
+# 用量账本。
+[[d1_databases]]
+binding = "MYRIAD_LEDGER"
+database_name = "myriad-ledger"
+database_id = "a1782695-7a08-40da-8ea3-f296a71f2012"
+migrations_dir = "migrations"

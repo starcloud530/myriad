@@ -4,7 +4,19 @@ import { FalAdapter } from "./adapters/fal.ts";
 import { HttpAdapter } from "./adapters/http.ts";
 import { OpenAiCompatAdapter } from "./adapters/openai_compat.ts";
 import { VolcengineAdapter } from "./adapters/volcengine.ts";
-import { ApiKeyAuth } from "./auth/index.ts";
+import {
+  createAuthStore,
+  GatewayAuth,
+} from "./auth/index.ts";
+import { isProduction } from "./auth/store.ts";
+import {
+  handleAuthDev,
+  handleAuthLogout,
+  handleAuthMe,
+  handleOauthCallback,
+  handleOauthStart,
+} from "./auth/http.ts";
+import type { AuthStore } from "./auth/types.ts";
 import { MemoryCatalog } from "./catalog/memory.ts";
 import { defaultSeed } from "./catalog/seed.ts";
 import type { Catalog } from "./catalog/types.ts";
@@ -22,12 +34,13 @@ import {
   handleUpdateKey,
 } from "./keys/http.ts";
 import { createKeyStore, type KeyStore } from "./keys/index.ts";
-import { ConsoleLedger } from "./ledger/index.ts";
+import { aggregateUsage, createLedger, parseRange, rangeWindow } from "./ledger/index.ts";
 import { PassthroughQuota } from "./quota/index.ts";
 
 export interface AppDeps extends InvokeDeps {
   catalog: Catalog;
   keys: KeyStore;
+  authStore: AuthStore;
 }
 
 async function readJson(request: Request): Promise<unknown> {
@@ -52,6 +65,20 @@ export function createApp(deps: AppDeps): Router {
       name: "myriad",
       name_zh: "万象",
     }),
+  );
+
+  router.on("GET", "/v1/auth/me", async (request) => handleAuthMe(deps.authStore, request, deps.env));
+  router.on("POST", "/v1/auth/logout", async (request) => handleAuthLogout(deps.authStore, request, deps.env));
+  router.on("POST", "/v1/auth/dev/session", async (request) =>
+    handleAuthDev(deps.authStore, request, deps.env, await readJson(request)),
+  );
+  router.on("GET", "/v1/auth/google/start", async (request) => handleOauthStart(request, deps.env, "google"));
+  router.on("GET", "/v1/auth/google/callback", async (request) =>
+    handleOauthCallback(deps.authStore, request, deps.env, "google"),
+  );
+  router.on("GET", "/v1/auth/github/start", async (request) => handleOauthStart(request, deps.env, "github"));
+  router.on("GET", "/v1/auth/github/callback", async (request) =>
+    handleOauthCallback(deps.authStore, request, deps.env, "github"),
   );
 
   router.on("GET", "/v1/capabilities", async (request) => {
@@ -111,12 +138,27 @@ export function createApp(deps: AppDeps): Router {
     return handleDeleteKey(deps.keys, product, params.id ?? "");
   });
 
+  router.on("GET", "/v1/usage", async (request) => {
+    const product = await deps.auth.requireProduct(request);
+    const range = parseRange(new URL(request.url).searchParams.get("range"));
+    const window = rangeWindow(range);
+    const events = await deps.ledger.list(product.id, window.from, window.to);
+    return json(aggregateUsage(events, range, window));
+  });
+
   return router;
 }
 
 export function createDefaultDeps(env: Env): AppDeps {
-  const catalog = new MemoryCatalog(defaultSeed());
+  const seed = defaultSeed();
+  if (isProduction(env)) {
+    for (const product of seed.products) {
+      product.apiKeys = [];
+    }
+  }
+  const catalog = new MemoryCatalog(seed);
   const keys = createKeyStore(env);
+  const authStore = createAuthStore(env);
   const adapters = new AdapterRegistry()
     .register(new EchoAdapter())
     .register(new HttpAdapter())
@@ -127,9 +169,10 @@ export function createDefaultDeps(env: Env): AppDeps {
   return {
     catalog,
     keys,
-    auth: new ApiKeyAuth(catalog, keys),
+    authStore,
+    auth: new GatewayAuth(catalog, keys, authStore, env),
     quota: new PassthroughQuota(),
-    ledger: new ConsoleLedger(),
+    ledger: createLedger(env),
     adapters,
     env,
   };

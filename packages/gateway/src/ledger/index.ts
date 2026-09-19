@@ -1,21 +1,18 @@
-export interface LedgerEvent {
-  requestId: string;
-  productId: string;
-  capabilityId: string;
-  channelId: string;
-  ok: boolean;
-  durationMs: number;
-  units: number;
-  error?: string;
-}
+import type { Env } from "../env.ts";
+import { D1Ledger } from "./d1.ts";
+import { MemoryLedger } from "./memory.ts";
+import type { Ledger } from "./types.ts";
 
-export interface Ledger {
-  record(event: LedgerEvent): Promise<void>;
-}
+export type { Ledger, LedgerEvent, UsageRange, UsageReport } from "./types.ts";
+export { aggregateUsage, parseRange, rangeWindow } from "./aggregate.ts";
 
-/** 成本账走追加日志：比 KV 写便宜，且「记了才算计过费」。 */
-export class ConsoleLedger implements Ledger {
-  async record(event: LedgerEvent): Promise<void> {
-    console.log(JSON.stringify({ type: "myriad.ledger", ...event }));
+let memory: MemoryLedger | undefined;
+
+/** D1 有绑定就走可查询账本；本地单测 / 未绑定时用进程内内存，不造假数。 */
+export function createLedger(env: Env): Ledger {
+  if (env.MYRIAD_LEDGER) {
+    return new D1Ledger(env.MYRIAD_LEDGER);
   }
+  memory ??= new MemoryLedger();
+  return memory;
 }

@@ -67,7 +67,7 @@ function parsedInput(kind: InvokeSuccess["kind"], input: InvokeInput): InvokeInp
 }
 
 export async function invokeCapability(deps: InvokeDeps, command: InvokeCommand): Promise<InvokeSuccess> {
-  const product = await deps.auth.requireProduct(command.request);
+  const { product, keyId } = await deps.auth.requireAuth(command.request);
   const capability = await deps.catalog.getCapability(command.capabilityId);
   if (!capability) {
     throw new NotFoundError(`capability ${command.capabilityId} not found`);
@@ -101,11 +101,13 @@ export async function invokeCapability(deps: InvokeDeps, command: InvokeCommand)
       await deps.ledger.record({
         requestId: command.requestId,
         productId: product.id,
+        keyId,
         capabilityId: capability.id,
         channelId: channel.id,
         ok: true,
         durationMs: Date.now() - started,
         units: 1,
+        createdAt: Date.now(),
       });
       return {
         request_id: command.requestId,
@@ -120,12 +122,14 @@ export async function invokeCapability(deps: InvokeDeps, command: InvokeCommand)
       await deps.ledger.record({
         requestId: command.requestId,
         productId: product.id,
+        keyId,
         capabilityId: capability.id,
         channelId: channel.id,
         ok: false,
         durationMs: Date.now() - started,
         units: 0,
         error: lastMessage,
+        createdAt: Date.now(),
       });
     }
   }
