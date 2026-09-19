@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { listKeys } from "../../lib/api.ts";
-import { getDevApiKey } from "../../lib/devKey.ts";
 import { readActiveKeyId, rememberSecret, secretOf, writeActiveKeyId } from "./sessionSecrets.ts";
 import type { ProductKey } from "./types.ts";
 
@@ -16,7 +15,6 @@ export function useProductKeys(): {
   captureSecret: (id: string, value: string) => void;
   reload: () => Promise<void>;
 } {
-  const bootstrap = getDevApiKey();
   const [keys, setKeys] = useState<ProductKey[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -26,8 +24,8 @@ export function useProductKeys(): {
   const reload = useCallback(async () => {
     setLoading(true);
     try {
-      const body = await listKeys(bootstrap);
-      setKeys(body.keys);
+      const body = await listKeys();
+      setKeys(body.keys.filter((row) => !row.system));
       setError("");
     } catch (caught: unknown) {
       setKeys([]);
@@ -35,7 +33,7 @@ export function useProductKeys(): {
     } finally {
       setLoading(false);
     }
-  }, [bootstrap]);
+  }, []);
 
   useEffect(() => {
     void reload();
@@ -51,9 +49,7 @@ export function useProductKeys(): {
     [keys, selectedId],
   );
 
-  const secret = selected
-    ? (secretOf(selected.id, selected.system ? bootstrap : selected.secret) ?? "")
-    : bootstrap;
+  const secret = selected ? (secretOf(selected.id, selected.secret) ?? "") : "";
   void secretTick;
 
   const remember = (key: ProductKey): void => {

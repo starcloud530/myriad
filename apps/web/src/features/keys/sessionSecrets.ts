@@ -39,7 +39,7 @@ export function secretOf(id: string, fallback?: string): string | undefined {
 }
 
 export function readActiveKeyId(): string {
-  return sessionStorage.getItem(activeKey) ?? "dev-key";
+  return sessionStorage.getItem(activeKey) ?? "";
 }
 
 export function writeActiveKeyId(id: string): void {

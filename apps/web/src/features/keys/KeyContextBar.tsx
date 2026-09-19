@@ -25,10 +25,10 @@ export function KeyContextBar({
           onCommit(event.target.value);
         }}
         onBlur={(event) => {
-          onCommit(event.target.value.trim() || "dev-key");
+          onCommit(event.target.value.trim());
         }}
         onPressEnter={(event) => {
-          onCommit(event.currentTarget.value.trim() || "dev-key");
+          onCommit(event.currentTarget.value.trim());
         }}
       />
     </label>
